@@ -16,6 +16,11 @@ namespace MkscEdit.Extract
         public Tile[][] tiles;
         public byte[] romfile;
 
+        public Rom(byte[] romfile, Offsets offsets){
+            tiles = new Tile[0][];
+            this.romfile = romfile;
+            this.offsets = offsets;
+        }
         public unsafe void OpenRom(string path)
         {
             romfile = File.ReadAllBytes(path);

@@ -8,9 +8,7 @@ class Program{
     static unsafe void Main(string[] args){
         byte[] file = File.ReadAllBytes("/home/antimattur/Downloads/mksc.gba");
         Offsets offsets = new Offsets(file);
-        Rom rom = new Rom();
-        rom.romfile = file;
-        rom.offsets = offsets;
+        Rom rom = new Rom(file, offsets);
 
         // Initilizes SDL.
         if (SDL.SDL_Init(SDL.SDL_INIT_VIDEO) < 0)
@@ -19,7 +17,7 @@ class Program{
         }
 
         // Create a new window given a title, size, and passes it a flag indicating it should be shown.
-        var window = SDL.SDL_CreateWindow("SDL .NET 6 Tutorial", SDL.SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN);
+        var window = SDL.SDL_CreateWindow("MkscEdit", SDL.SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN);
         
         if (window == IntPtr.Zero)
         {
