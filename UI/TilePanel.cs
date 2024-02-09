@@ -41,9 +41,18 @@ namespace MkscEdit{
             if (new SDL_Rect() {x=ContentPosition.X,y=ContentPosition.Y,w=tileSize*columns,h=tileSize*rows}.Contains(x,y)){
                 int tilex = (int)Math.Floor((decimal)(x-ContentPosition.X)/tileSize);
                 int tiley = (int)Math.Floor((decimal)(y-ContentPosition.Y)/tileSize);
-                return indicies[tilex, tiley];
+                int temp = tilex + tiley * columns;
+                return indicies[temp%16, (int)temp/16];
             } else {
                 return -1;
+            }
+        }
+        public void SetTile(byte idx, int x, int y) { 
+            if (new SDL_Rect() {x=ContentPosition.X,y=ContentPosition.Y,w=tileSize*columns,h=tileSize*rows}.Contains(x,y)){
+                int tilex = (int)Math.Floor((decimal)(x-ContentPosition.X)/tileSize);
+                int tiley = (int)Math.Floor((decimal)(y-ContentPosition.Y)/tileSize);
+                int temp = tilex + tiley * columns;
+                indicies[temp%16, (int)temp/16] = (byte)idx;
             }
         }
         public void DrawElement(){
