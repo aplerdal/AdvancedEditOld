@@ -31,7 +31,7 @@ class Program{
         #endregion
 
         SDL_Rect elementPosition = new SDL_Rect() { x = 0, y = 0, w = 256, h = 256 };
-        TilePanel tilePanel = new TilePanel(renderer,rom, elementPosition, new(0,0));
+        TilePalette tilePanel = new TilePalette(renderer,rom, elementPosition, new(0,0));
         tilePanel.SetTrack(Track.PeachCircuit);
          
         // Main loop for the program
@@ -42,7 +42,7 @@ class Program{
             {
                 switch (e.type)
                 {
-                    case SDL.SDL_EventType.SDL_QUIT:
+                    case SDL_EventType.SDL_QUIT:
                         running = false;
                         break;
                     case SDL_EventType.SDL_MOUSEBUTTONDOWN:
