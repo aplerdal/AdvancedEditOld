@@ -11,6 +11,7 @@ class Program{
         Offsets offsets = new Offsets(file);
         Rom rom = new Rom(file, offsets);
 
+        #region Init SDL
         // Initilizes SDL.
         if (SDL.SDL_Init(SDL.SDL_INIT_VIDEO) < 0) Console.WriteLine($"There was an issue initilizing SDL. {SDL.SDL_GetError()}");
 
@@ -27,21 +28,11 @@ class Program{
         var running = true;
         
         rom.ExtractTileGraphics();
+        #endregion
 
-        //combine to images
-        IntPtr tileAtlas = SDL_CreateRGBSurface(0, 8, 2048, 32, 0, 0, 0, 0);
-        for (int i = 0; i < rom.tiles[(int)Track.PeachCircuit].Length; i++)
-        {
-            var t = rom.tiles[(int)Track.SkyGarden][i];
-            IntPtr s = (IntPtr)t.ToImage();
-            SDL_Rect d = new SDL_Rect { x = 0, y = i * 8, w = 8, h = 8 };
-            if (SDL_BlitSurface(s, IntPtr.Zero, tileAtlas, ref d) < 0) { Console.WriteLine(SDL.SDL_GetError()); };
-            SDL_FreeSurface(s);
-        }
-
-        SDL_Surface* tile = rom.tiles[(int)Track.PeachCircuit][0].ToImage();
-        IntPtr texture = SDL_CreateTextureFromSurface(renderer,(IntPtr)tile);
-        IntPtr textureAtlas = SDL_CreateTextureFromSurface(renderer, tileAtlas);
+        SDL_Rect elementPosition = new SDL_Rect() { x = 0, y = 0, w = 256, h = 256 };
+        TilePanel tilePanel = new TilePanel(renderer,rom, elementPosition, new(0,0));
+        tilePanel.SetTrack(Track.PeachCircuit);
          
         // Main loop for the program
         while (running)
@@ -54,26 +45,18 @@ class Program{
                     case SDL.SDL_EventType.SDL_QUIT:
                         running = false;
                         break;
+                    case SDL_EventType.SDL_MOUSEBUTTONDOWN:
+                        Console.WriteLine(tilePanel.GetTile(e.motion.x,e.motion.y));
+                        break;
                 }
             }
         
             // Sets the color that the screen will be cleared with.
-            if (SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255) < 0) Console.WriteLine($"There was an issue with setting the render draw color. {SDL.SDL_GetError()}");
-        
-            // Clears the current render surface.
-            if (SDL_RenderClear(renderer) < 0) Console.WriteLine($"There was an issue with clearing the render surface. {SDL.SDL_GetError()}");
-            int rows = 16;
-            int col = 256 / rows;
-            for (int x = 0; x < rows; x++)
-            {
-                for (int y = 0; y < col; y++)
-                {
-                    SDL_Rect s = new SDL_Rect() { x = 0, y = x * 8 + y * 8 * rows, w = 8, h = 8 };
-                    SDL_Rect d = new SDL_Rect() { x = x * 16, y = y * 16, w = 16, h = 16 };
-                    //SDL_RenderCopy(renderer, texture, IntPtr.Zero, ref d);
-                    SDL_RenderCopy(renderer, textureAtlas, ref s, ref d);
-                }
-            }
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderClear(renderer);
+
+            tilePanel.DrawElement();
+
             // Switches out the currently presented render surface with the one we just did work on.
             SDL_RenderPresent(renderer);
         }
