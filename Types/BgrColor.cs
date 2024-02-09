@@ -25,7 +25,7 @@ namespace MkscEdit.Types
         }
         public uint ToColor()
         {
-            return BitConverter.ToUInt32(new byte[] {(byte)(r * 8), (byte)(g * 8), (byte)(b * 8), 255});
+            return BitConverter.ToUInt32(new byte[] {(byte)(b * 8), (byte)(g * 8), (byte)(r * 8), 255});
         }
     }
 }
