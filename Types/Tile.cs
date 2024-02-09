@@ -10,7 +10,6 @@ namespace MkscEdit.Types {
             this.palette = palette;
             this.indicies = indicies;
         }
-
         public static Tile[] GenerateTiles(byte[] indicies, Palette palette)
         {
             int tileno = (int)Math.Ceiling((decimal)indicies.Length / (decimal)64);

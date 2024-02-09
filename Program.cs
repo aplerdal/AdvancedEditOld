@@ -7,15 +7,16 @@ using System.Runtime.CompilerServices;
 namespace MkscEdit;
 class Program{
     static unsafe void Main(string[] args){
-        byte[] file = File.ReadAllBytes("/home/antimattur/Downloads/mksc.gba");
+        byte[] file = File.ReadAllBytes("mksc.gba");
         Offsets offsets = new Offsets(file);
         Rom rom = new Rom(file, offsets);
 
+        #region Init SDL
         // Initilizes SDL.
         if (SDL_Init(SDL.SDL_INIT_VIDEO) < 0) Console.WriteLine($"There was an issue initilizing SDL. {SDL.SDL_GetError()}");
 
         // Create a new window given a title, size, and passes it a flag indicating it should be shown.
-        var window = SDL_CreateWindow("MkscEdit", SDL.SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN);
+        var window = SDL.SDL_CreateWindow("MkscEdit", SDL.SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 1024, 1024, SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN);
         
         if (window == IntPtr.Zero) Console.WriteLine($"There was an issue creating the window. {SDL.SDL_GetError()}");
         
@@ -27,51 +28,42 @@ class Program{
         var running = true;
         
         rom.ExtractTileGraphics();
+        #endregion
 
-        //combine to images
-        foreach (var t in rom.tiles[(int)Track.PeachCircuit]){
-            SDL.SDL_Surface* s = t.ToImage();
-            SDL_FreeSurface((IntPtr)s);
-        }
-        SDL.SDL_Surface* tile = rom.tiles[(int)Track.PeachCircuit][0].ToImage();
-        IntPtr texture = SDL.SDL_CreateTextureFromSurface(renderer,(IntPtr)tile);
-        
+        SDL_Rect elementPosition = new SDL_Rect() { x = 0, y = 0, w = 256, h = 256 };
+        TilePalette tilePanel = new TilePalette(renderer,rom, elementPosition, new(0,0));
+        tilePanel.SetTrack(Track.PeachCircuit);
+         
         // Main loop for the program
         while (running)
         {
             // Check to see if there are any events and continue to do so until the queue is empty.
-            while (SDL.SDL_PollEvent(out SDL.SDL_Event e) == 1)
+            while (SDL_PollEvent(out SDL_Event e) == 1)
             {
                 switch (e.type)
                 {
                     case SDL_EventType.SDL_QUIT:
                         running = false;
                         break;
+                    case SDL_EventType.SDL_MOUSEBUTTONDOWN:
+                        Console.WriteLine(tilePanel.GetTile(e.motion.x,e.motion.y));
+                        break;
                 }
             }
         
             // Sets the color that the screen will be cleared with.
-            if (SDL.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255) < 0)
-            {
-                Console.WriteLine($"There was an issue with setting the render draw color. {SDL.SDL_GetError()}");
-            }
-        
-            // Clears the current render surface.
-            if (SDL.SDL_RenderClear(renderer) < 0)
-            {
-                Console.WriteLine($"There was an issue with clearing the render surface. {SDL.SDL_GetError()}");
-            }
-            SDL.SDL_Rect r = new SDL.SDL_Rect() {x=0,y=0,w=8,h=8};
-            SDL.SDL_Rect s = new SDL.SDL_Rect() {x=0,y=0,w=64,h=64};
-            SDL.SDL_RenderCopy(renderer, texture, ref r, ref s);
-        
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderClear(renderer);
+
+            tilePanel.DrawElement();
+
             // Switches out the currently presented render surface with the one we just did work on.
-            SDL.SDL_RenderPresent(renderer);
+            SDL_RenderPresent(renderer);
         }
         
         // Clean up the resources that were created.
-        SDL.SDL_DestroyRenderer(renderer);
-        SDL.SDL_DestroyWindow(window);
-        SDL.SDL_Quit();
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
     }
 }
