@@ -41,7 +41,7 @@ namespace MkscEdit{
             if (new SDL_Rect() {x=ContentPosition.X,y=ContentPosition.Y,w=tileSize*columns,h=tileSize*rows}.Contains(x,y)){
                 int tilex = (int)Math.Floor((decimal)(x-ContentPosition.X)/tileSize);
                 int tiley = (int)Math.Floor((decimal)(y-ContentPosition.Y)/tileSize);
-                return tilex + tiley * columns;
+                return indicies[tilex, tiley];
             } else {
                 return -1;
             }

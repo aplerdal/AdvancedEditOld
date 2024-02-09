@@ -11,30 +11,7 @@ namespace MkscEdit{
                 indicies[(int)(i/16),(int)(i%16)] = (byte)i;
             }
         }
-        public unsafe void SetTrack(Track track){
-            trackId = track;
-            IntPtr ta = SDL_CreateRGBSurface(0,8,2048,32,0,0,0,0);
-            for (int i = 0; i < rom.tiles[(int)Track.PeachCircuit].Length; i++)
-            {
-                var t = rom.tiles[(int)Track.SkyGarden][i];
-                IntPtr s = (IntPtr)t.ToImage();
-                SDL_Rect d = new SDL_Rect { x = 0, y = i * 8, w = 8, h = 8 };
-                SDL_BlitSurface(s, IntPtr.Zero, ta, ref d);
-                SDL_FreeSurface(s);
-            }
-            SDL_DestroyTexture(tileAtlas);
-            tileAtlas = SDL_CreateTextureFromSurface(renderer, ta);
-        }
-        public int GetTile(int x, int y){
-            if (new SDL_Rect() {x=ContentPosition.X,y=ContentPosition.Y,w=tileSize*columns,h=tileSize*rows}.Contains(x,y)){
-                int tilex = (int)Math.Floor((decimal)(x-ContentPosition.X)/tileSize);
-                int tiley = (int)Math.Floor((decimal)(y-ContentPosition.Y)/tileSize);
-                return tilex + tiley * columns;
-            } else {
-                return -1;
-            }
-        }
-        public void DrawElement(){
+        public new void DrawElement(){
             SDL_RenderSetClipRect(renderer,ref ElementPosition);
             for (int x = 0; x < columns; x++)
             {
