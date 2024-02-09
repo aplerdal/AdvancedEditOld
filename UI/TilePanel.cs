@@ -2,7 +2,7 @@ using System.Drawing;
 using MkscEdit.Extract;
 using MkscEdit.Types;
 using static SDL2.SDL;
-namespace MkscEdit{
+namespace MkscEdit.UI{
     class TilePanel{
         public byte[,] indicies;
         public Track trackId;

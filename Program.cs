@@ -1,9 +1,8 @@
 ﻿using MkscEdit.Extract;
 using MkscEdit.Types;
+using MkscEdit.UI;
 using SDL2;
 using static SDL2.SDL;
-using System;
-using System.Runtime.CompilerServices;
 namespace MkscEdit;
 class Program{
     static unsafe void Main(string[] args){
@@ -16,7 +15,7 @@ class Program{
         if (SDL_Init(SDL.SDL_INIT_VIDEO) < 0) Console.WriteLine($"There was an issue initilizing SDL. {SDL.SDL_GetError()}");
 
         // Create a new window given a title, size, and passes it a flag indicating it should be shown.
-        var window = SDL.SDL_CreateWindow("MkscEdit", SDL.SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 1024, 1024, SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN);
+        var window = SDL_CreateWindow("MkscEdit", SDL.SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 1024, 1024, SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN);
         
         if (window == IntPtr.Zero) Console.WriteLine($"There was an issue creating the window. {SDL.SDL_GetError()}");
         

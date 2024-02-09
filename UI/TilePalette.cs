@@ -2,7 +2,7 @@ using System.Drawing;
 using MkscEdit.Extract;
 using MkscEdit.Types;
 using static SDL2.SDL;
-namespace MkscEdit{
+namespace MkscEdit.UI{
     class TilePalette : TilePanel{
         
         public TilePalette(IntPtr renderer, Rom rom, SDL_Rect elementPosition, Point contentPosition) : base(renderer,rom,elementPosition,contentPosition) {
