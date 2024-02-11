@@ -10,8 +10,8 @@ namespace MkscEdit.UI{
         public SDL_Rect ElementPosition;
         public Point ContentPosition;
         public int tileSize = 16;
-        public int columns = 16;
-        public int rows = 16;
+        public int columns;
+        public int rows;
         
         public TilePanel(SDL_Rect elementPosition, Point contentPosition) {
             indicies = new byte[0,0];
@@ -52,12 +52,15 @@ namespace MkscEdit.UI{
             }
         }
         public void DrawElement(){
+            columns = (int)Math.Clamp(Math.Ceiling((decimal)ElementPosition.w / tileSize), 0, indicies.GetLength(0));
+            rows = (int)Math.Clamp(Math.Ceiling((decimal)ElementPosition.h / tileSize),0,indicies.GetLength(1));
+
             SDL_RenderSetClipRect(Program.Renderer,ref ElementPosition);
             for (int x = 0; x < columns; x++)
             {
                 for (int y = 0; y < rows; y++)
                 {
-                    SDL_Rect s = new SDL_Rect() { x = 0, y = indicies[x,y]*8, w = 8, h = 8 };
+                    SDL_Rect s = new SDL_Rect() { x = 0, y = indicies[y,x]*8, w = 8, h = 8 };
                     SDL_Rect d = new SDL_Rect() { x = x * tileSize + ContentPosition.X, y = y * tileSize + ContentPosition.Y, w = tileSize, h = tileSize };
                     SDL_RenderCopy(Program.Renderer, tileAtlas, ref s, ref d);
                 }

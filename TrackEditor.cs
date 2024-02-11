@@ -7,7 +7,6 @@ namespace MkscEdit
 {
     class TrackEditor
     {
-        TextButton button;
         TilePalette tilePalette;
         TilePanel tilemap;
         Tile tile;
@@ -15,16 +14,17 @@ namespace MkscEdit
         Track track = Track.PeachCircuit;
         public TrackEditor()
         {
-            Console.WriteLine(Program.WindowWidth);
             SDL_Rect elementPosition = new SDL_Rect() { x = Program.WindowWidth - 256, y = 0, w = 256, h = 256 };
             tilePalette = new TilePalette(elementPosition, new(Program.WindowWidth - 256, 0));
             tilePalette.SetTrack(track);
+
             elementPosition = new SDL_Rect() { x = 0, y = 0, w = Program.WindowWidth - 256, h = Program.WindowHeight };
             tilemap = new TilePanel(elementPosition, new(0, 0));
+            tilemap.tileSize = 4;
             tilemap.SetTrack(track);
             tile = new Tile(new(0,0));
             tile.SetTrack(track);
-            byte[] layout = new byte[512*512];
+            byte[] layout = new byte[256*256];
             int currentOffset = 0;
             foreach (var o in Program.offsets[track].LayoutBlocks)
             {
@@ -33,12 +33,12 @@ namespace MkscEdit
                 currentOffset += b.Length;
             }
             
-            byte[,] output = new byte[512, 512];
-            for (int i = 0; i < 512; i++)
+            byte[,] output = new byte[256, 256];
+            for (int i = 0; i < 256; i++)
             {
-                for (int j = 0; j < 512; j++)
+                for (int j = 0; j < 256; j++)
                 {
-                    output[i, j] = layout[i * 512 + j];
+                    output[i, j] = layout[i * 256 + j];
                 }
             }
             tilemap.indicies = output;
@@ -46,6 +46,9 @@ namespace MkscEdit
         public void Update()
         {
             int x, y;
+            tilemap.ElementPosition = new SDL_Rect() { x = 0, y = 0, w = Program.WindowWidth - 256, h = Program.WindowHeight };
+            tilePalette.ElementPosition = new SDL_Rect() { x = Program.WindowWidth - 256, y = 0, w = 256, h = 256 };
+            tilePalette.ContentPosition = new(Program.WindowWidth - 256, 0);
             SDL_GetMouseState(out x, out y);
             tile.ContentPosition = new(x,y);
             if (selectedTile!=-1)
@@ -55,7 +58,9 @@ namespace MkscEdit
         }
         public void Draw()
         {
+            tilemap.DrawElement();
             tilePalette.DrawElement();
+
             tile.DrawElement();
         }
         public void MouseDown(SDL_Event e)

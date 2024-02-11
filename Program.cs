@@ -73,7 +73,7 @@ class Program{
                         break;
                 }
             }
-
+            SDL_GetWindowSize(window, out WindowWidth, out WindowHeight);
             trackEditor.Update();
         
             // Sets the color that the screen will be cleared with.
