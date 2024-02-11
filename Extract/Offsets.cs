@@ -77,12 +77,15 @@ namespace MkscEdit.Extract
     }
     public class Offsets
     {
-        static void RegTrack(int[][] _trackOffsets, byte[] rom, Track trackid, int address, int tilesetPointer, int palette, int tileBehaviours, int objects, int overlay, int itemBoxes, int endline)
+        public int[] LayoutPointers;
+        public int address;
+        void RegTrack(int[][] _trackOffsets, byte[] rom, Track trackid, int address, int tilesetPointer, int palette, int tileBehaviours, int objects, int overlay, int itemBoxes, int endline)
         {
             int ptabs;
             int[] track;
             int[] TilePointers;
             track = _trackOffsets[(int)trackid];
+            this.address = address;
             track[(int)TrackOffset.Address] = address;
             track[(int)TrackOffset.TilesetPointerTable] = tilesetPointer;
             ptabs /*abs pointer table ref*/ = track[(int)TrackOffset.Address] + track[(int)TrackOffset.TilesetPointerTable];
@@ -93,12 +96,32 @@ namespace MkscEdit.Extract
                 (ushort)(rom[(ptabs+7)]<<8|rom[ptabs+6]),
             };
             track[(int)TrackOffset.TrackLayoutPointer] = rom[ptabs + 0x100 + 1] << 8 | rom[ptabs + 0x100];
+            ptabs = address + track[(int)TrackOffset.TrackLayoutPointer];
+            LayoutPointers = new int[]
+            {
+                (ushort)(rom[(ptabs+1)]<<8|rom[ptabs  ]),
+                (ushort)(rom[(ptabs+3)]<<8|rom[ptabs+2]),
+                (ushort)(rom[(ptabs+5)]<<8|rom[ptabs+4]),
+                (ushort)(rom[(ptabs+7)]<<8|rom[ptabs+6]),
+                (ushort)(rom[(ptabs+9)]<<8|rom[ptabs+8]),
+                (ushort)(rom[(ptabs+11)]<<8|rom[ptabs+10]),
+                (ushort)(rom[(ptabs+13)]<<8|rom[ptabs+12]),
+                (ushort)(rom[(ptabs+15)]<<8|rom[ptabs+14]),
+                (ushort)(rom[(ptabs+17)]<<8|rom[ptabs+16]),
+                (ushort)(rom[(ptabs+19)]<<8|rom[ptabs+18]),
+                (ushort)(rom[(ptabs+21)]<<8|rom[ptabs+20]),
+                (ushort)(rom[(ptabs+23)]<<8|rom[ptabs+22]),
+                (ushort)(rom[(ptabs+25)]<<8|rom[ptabs+24]),
+                (ushort)(rom[(ptabs+27)]<<8|rom[ptabs+26]),
+                (ushort)(rom[(ptabs+29)]<<8|rom[ptabs+28]),
+                (ushort)(rom[(ptabs+31)]<<8|rom[ptabs+30]),
+            };
             track[(int)TrackOffset.Tiles1] = ptabs + TilePointers[0];
             track[(int)TrackOffset.Tiles2] = ptabs + TilePointers[1];
             track[(int)TrackOffset.Tiles3] = ptabs + TilePointers[2];
             track[(int)TrackOffset.Tiles4] = ptabs + TilePointers[3];
-            track[(int)TrackOffset.Palette] = address+palette;
-            track[(int)TrackOffset.TileBehaviors] = address+tileBehaviours;
+            track[(int)TrackOffset.Palette] = address + palette;
+            track[(int)TrackOffset.TileBehaviors] = address + tileBehaviours;
             track[(int)TrackOffset.Objects] = address + objects;
             track[(int)TrackOffset.Overlay] = address + overlay;
             track[(int)TrackOffset.ItemBoxes] = address + itemBoxes;
