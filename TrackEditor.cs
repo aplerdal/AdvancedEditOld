@@ -24,14 +24,21 @@ namespace MkscEdit
             tilemap.SetTrack(track);
             tile = new Tile(new(0,0));
             tile.SetTrack(track);
-
-            byte[] b = Program.rom.DecompressRange(Program.file, Program.offsets[(int)track]+1);
+            byte[] layout = new byte[512*512];
+            int currentOffset = 0;
+            foreach (var o in Program.offsets[track].LayoutBlocks)
+            {
+                var b = Program.rom.DecompressRange(Program.file, o);
+                Array.Copy(b, 0, layout, currentOffset, b.Length);
+                currentOffset += b.Length;
+            }
+            
             byte[,] output = new byte[512, 512];
             for (int i = 0; i < 512; i++)
             {
                 for (int j = 0; j < 512; j++)
                 {
-                    output[i, j] = b[i * 512 + j];
+                    output[i, j] = layout[i * 512 + j];
                 }
             }
             tilemap.indicies = output;
