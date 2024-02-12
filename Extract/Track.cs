@@ -17,6 +17,7 @@ namespace MkscEdit.Extract
         public int EndlinePointer;
         public int[] TileBlocks;
         int tileLength;
+        int tileLength;
         public int[] LayoutBlocks;
 
         public Tile[] Tiles;
@@ -68,6 +69,7 @@ namespace MkscEdit.Extract
             int pal = PalettePointer;
             byte[] tilegfx = new byte[4096 * 4];
             tileLength = 8 + LZ77.DecompressedLength(TrackData, t1) + LZ77.DecompressedLength(TrackData, t2) + LZ77.DecompressedLength(TrackData, t3) + LZ77.DecompressedLength(TrackData, t4);
+            tileLength = 8 + LZ77.DecompressedLength(TrackData, t1) + LZ77.DecompressedLength(TrackData, t2) + LZ77.DecompressedLength(TrackData, t3) + LZ77.DecompressedLength(TrackData, t4);
             Array.Copy(LZ77.DecompressRange(TrackData, t1), 0, tilegfx, 4096 * 0, 4096);
             Array.Copy(LZ77.DecompressRange(TrackData, t2), 0, tilegfx, 4096 * 1, 4096);
             Array.Copy(LZ77.DecompressRange(TrackData, t3), 0, tilegfx, 4096 * 2, 4096);
@@ -77,7 +79,9 @@ namespace MkscEdit.Extract
             Palette palette = new Palette(rawpal);
             Tiles = Tile.GenerateTiles(tilegfx, palette);
             byte [] t = PackData();
+            byte [] t = PackData();
         }
+        public byte[] PackData()
         public byte[] PackData()
         {
             #region Tiles
