@@ -17,7 +17,6 @@ namespace MkscEdit.Extract
         public int EndlinePointer;
         public int[] TileBlocks;
         int tileLength;
-        int tileLength;
         public int[] LayoutBlocks;
 
         public Tile[] Tiles;
