@@ -8,16 +8,11 @@ using MkscEdit.Compression;
 using MkscEdit.Types;
 using System.Diagnostics;
 
-namespace MkscEdit.Extract
+namespace MkscEdit.TrackData
 {
-    public class Rom
+    public static class Rom
     {
-        public Tile[][] tiles;
-
-        public Rom(){
-            tiles = new Tile[0][];
-        }
-        public unsafe bool OpenRom(string path)
+        public static unsafe bool OpenRom(string path)
         {
             var t = File.ReadAllBytes(path);
             if (!VerifyRom(t))
@@ -28,7 +23,7 @@ namespace MkscEdit.Extract
             return true;
         }
 
-        public bool VerifyRom(byte[] file)
+        public static bool VerifyRom(byte[] file)
         {
             //Check rom code   A                      M                      K                      E
             if ((file[0xac] == 0x41) & (file[0xad] == 0x4d) & (file[0xae] == 0x4b) & (file[0xaf] == 0x45))

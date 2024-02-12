@@ -1,6 +1,6 @@
 // Based on NLZ-GBA's compression
 
-using MkscEdit.Extract;
+using MkscEdit.TrackData;
 
 namespace MkscEdit.Compression
 {

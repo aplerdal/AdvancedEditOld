@@ -1,4 +1,4 @@
-﻿using MkscEdit.Extract;
+﻿using MkscEdit.TrackData;
 using MkscEdit.Types;
 using MkscEdit.UI;
 using SDL2;
@@ -8,11 +8,10 @@ using System.Diagnostics;
 
 namespace MkscEdit;
 class Program{
-    public static byte[] file;
-    public static Track[] tracks;
-    public static Rom rom;
-    public static IntPtr Renderer;
-    public static IntPtr Window;
+    public static byte[] file = new byte[0];
+    public static Track[] tracks = new Track[0];
+    public static IntPtr Renderer = IntPtr.Zero;
+    public static IntPtr Window = IntPtr.Zero;
     public static int WindowWidth, WindowHeight;
     static unsafe void Main(string[] args){
         #region Init SDL
@@ -29,16 +28,13 @@ class Program{
         
         var running = true;
         #endregion
-
-        SDL_GetWindowSize(Window, out WindowWidth, out WindowHeight);
-
+        
         while (true)
         {
             string str = NFD.OpenDialog("", new Dictionary<string, string>() { { "Game Boy Advance ROM", "gba" } });
             if (str != null)
             {
-                rom = new Rom();
-                if (rom.OpenRom(str))
+                if (Rom.OpenRom(str))
                 {
                     new Offsets();
                     break;
@@ -85,6 +81,7 @@ class Program{
             // Switches out the currently presented render surface with the one we just did work on.
             SDL_RenderPresent(Renderer);
         }
+        //Test code
         File.WriteAllBytes("MkscModified.gba", Track.CompileRom(tracks));
         
         // Clean up the resources that were created.
