@@ -2,14 +2,12 @@
 using MkscEdit.Types;
 using MkscEdit.UI;
 using SDL2;
-using NativeFileDialog.Extended;
 using static SDL2.SDL;
-using static SDL2.SDL_ttf;
+using NativeFileDialog.Extended;
 using System.Diagnostics;
 
 namespace MkscEdit;
 class Program{
-    public static IntPtr Sans;
     public static byte[] file;
     public static Track[] tracks;
     public static Rom rom;
@@ -29,12 +27,6 @@ class Program{
         // Creates a new SDL hardware renderer using the default graphics device with VSYNC enabled.
         Renderer = SDL_CreateRenderer(window, -1, SDL_RendererFlags.SDL_RENDERER_ACCELERATED | SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
         
-        if (Renderer == IntPtr.Zero) Console.WriteLine($"There was an issue creating the renderer. {SDL.SDL_GetError()}");
-        TTF_Init();
-
-        Sans = TTF_OpenFont("arial.ttf", 12);
-        if (Sans == IntPtr.Zero) { throw new Exception(SDL_GetError()); }
-
         var running = true;
         #endregion
 
@@ -93,6 +85,7 @@ class Program{
             // Switches out the currently presented render surface with the one we just did work on.
             SDL_RenderPresent(Renderer);
         }
+        File.WriteAllBytes("MkscModified.gba", Track.CompileRom(tracks));
         
         // Clean up the resources that were created.
         SDL_DestroyRenderer(Renderer);

@@ -81,11 +81,11 @@ namespace MkscEdit.Extract
         public byte[] PackData()
         {
             #region Tiles
-            byte[] testReversal = Tile.GetTileBytes(Tiles);
-            byte[] t1 = LZ77.CompressBytes(testReversal[(4096 * 0)..(4096 * 1)]);
-            byte[] t2 = LZ77.CompressBytes(testReversal[(4096 * 1)..(4096 * 2)]);
-            byte[] t3 = LZ77.CompressBytes(testReversal[(4096 * 2)..(4096 * 3)]);
-            byte[] t4 = LZ77.CompressBytes(testReversal[(4096 * 3)..(4096 * 4)]);
+            byte[] tiles = Tile.GetTileBytes(Tiles);
+            byte[] t1 = LZ77.CompressBytes(tiles[(4096 * 0)..(4096 * 1)]);
+            byte[] t2 = LZ77.CompressBytes(tiles[(4096 * 1)..(4096 * 2)]);
+            byte[] t3 = LZ77.CompressBytes(tiles[(4096 * 2)..(4096 * 3)]);
+            byte[] t4 = LZ77.CompressBytes(tiles[(4096 * 3)..(4096 * 4)]);
             byte[] bytes = new byte[2*4 + t1.Length + t2.Length + t3.Length + t4.Length];
             TileBlocks[0] = TileBlocks[0];
             TileBlocks[1] = TileBlocks[0] + t1.Length;
@@ -100,11 +100,22 @@ namespace MkscEdit.Extract
             byte1.AddRange(TrackData[0..TilesetPointerTable]);
             byte1.AddRange(bytes);
             byte1.AddRange(TrackData[(TilesetPointerTable + tileLength)..TrackData.Length]);
-
-
+            OffsetDataAfter(TilesetPointerTable+bytes.Length, offset);
             #endregion
 
             return bytes;
+        }
+        public static byte[] CompileRom(Track[] tracks){
+            int position = tracks[0].Address;
+            List<byte> rom = new List<byte>();
+            rom.AddRange(Program.file[0..position]);
+            for (int i = 0; i < tracks.Length; i++){
+                var track = tracks[i];
+                track.Address = position;
+                rom.AddRange(track.TrackData);
+                position += track.TrackData.Length;
+            }
+            return rom.ToArray();
         }
         public void OffsetDataAfter(int finalPos, int offset)
         {
