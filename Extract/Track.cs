@@ -82,7 +82,6 @@ namespace MkscEdit.Extract
             byte [] t = PackData();
         }
         public byte[] PackData()
-        public byte[] PackData()
         {
             #region Tiles
             byte[] tiles = Tile.GetTileBytes(Tiles);
