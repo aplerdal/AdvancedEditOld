@@ -79,7 +79,6 @@ namespace MkscEdit.Extract
             Palette palette = new Palette(rawpal);
             Tiles = Tile.GenerateTiles(tilegfx, palette);
             byte [] t = PackData();
-            byte [] t = PackData();
         }
         public byte[] PackData()
         {
