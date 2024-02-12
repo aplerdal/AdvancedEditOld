@@ -4,7 +4,6 @@ using MkscEdit.Types;
 using static SDL2.SDL;
 namespace MkscEdit.UI{
     class TilePalette : TilePanel{
-        
         public TilePalette( SDL_Rect elementPosition, Point contentPosition) : base(elementPosition,contentPosition) {
             indicies = new byte[16,16];
             columns = 16;

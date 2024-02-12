@@ -20,17 +20,17 @@ class Program{
         if (SDL_Init(SDL.SDL_INIT_VIDEO) < 0) Console.WriteLine($"There was an issue initilizing SDL. {SDL_GetError()}");
 
         // Create a new window given a title, size, and passes it a flag indicating it should be shown.
-        var window = SDL_CreateWindow("MkscEdit", SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 1024, 1024, SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL_WindowFlags.SDL_WINDOW_SHOWN);
+        Window = SDL_CreateWindow("MkscEdit", SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 1024, 1024, SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL_WindowFlags.SDL_WINDOW_SHOWN);
          
-        if (window == IntPtr.Zero) Console.WriteLine($"There was an issue creating the window. {SDL_GetError()}");
+        if (Window == IntPtr.Zero) Console.WriteLine($"There was an issue creating the window. {SDL_GetError()}");
         
         // Creates a new SDL hardware renderer using the default graphics device with VSYNC enabled.
-        Renderer = SDL_CreateRenderer(window, -1, SDL_RendererFlags.SDL_RENDERER_ACCELERATED | SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
+        Renderer = SDL_CreateRenderer(Window, -1, SDL_RendererFlags.SDL_RENDERER_ACCELERATED | SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
         
         var running = true;
         #endregion
 
-        SDL_GetWindowSize(window, out WindowWidth, out WindowHeight);
+        SDL_GetWindowSize(Window, out WindowWidth, out WindowHeight);
 
         while (true)
         {
@@ -73,7 +73,7 @@ class Program{
                         break;
                 }
             }
-            SDL_GetWindowSize(window, out WindowWidth, out WindowHeight);
+            SDL_GetWindowSize(Window, out WindowWidth, out WindowHeight);
             trackEditor.Update();
         
             // Sets the color that the screen will be cleared with.
@@ -89,7 +89,7 @@ class Program{
         
         // Clean up the resources that were created.
         SDL_DestroyRenderer(Renderer);
-        SDL_DestroyWindow(window);
+        SDL_DestroyWindow(Window);
         SDL_Quit();
     }
 }

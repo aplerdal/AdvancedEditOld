@@ -17,7 +17,6 @@ namespace MkscEdit.Extract
         public int EndlinePointer;
         public int[] TileBlocks;
         int tileLength;
-        int tileLength;
         public int[] LayoutBlocks;
 
         public Tile[] Tiles;
@@ -136,7 +135,6 @@ namespace MkscEdit.Extract
             {
                 if (finalPos < LayoutBlocks[i]) LayoutBlocks[i] += offset;
             }
-            if (finalPos < TrackData.Length) ; //Add offsetting track code
 
         }
         public static int LittleEndianInt(byte[] a)
