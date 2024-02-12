@@ -22,9 +22,9 @@ namespace MkscEdit.UI{
         public unsafe void SetTrack(TrackId track){
             trackId = track;
             IntPtr ta = SDL_CreateRGBSurface(0,8,2048,32,0,0,0,0);
-            for (int i = 0; i < Program.rom.tiles[(int)track].Length; i++)
+            for (int i = 0; i < Program.tracks[(int)track].Tiles.Length; i++)
             {
-                var t = Program.rom.tiles[(int)track][i];
+                var t = Program.tracks[(int)track].Tiles[i];
                 IntPtr s = (IntPtr)t.ToImage();
                 SDL_Rect d = new SDL_Rect { x = 0, y = i * 8, w = 8, h = 8 };
                 SDL_BlitSurface(s, IntPtr.Zero, ta, ref d);

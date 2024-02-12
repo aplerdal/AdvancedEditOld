@@ -16,6 +16,7 @@ namespace MkscEdit.Extract
         public int ItemBoxesPointer;
         public int EndlinePointer;
         public int[] TileBlocks;
+        int tileLength;
         public int[] LayoutBlocks;
 
         public Tile[] Tiles;
@@ -66,6 +67,7 @@ namespace MkscEdit.Extract
             int t4 = TileBlocks[3];
             int pal = PalettePointer;
             byte[] tilegfx = new byte[4096 * 4];
+            tileLength = 8 + LZ77.DecompressedLength(TrackData, t1) + LZ77.DecompressedLength(TrackData, t2) + LZ77.DecompressedLength(TrackData, t3) + LZ77.DecompressedLength(TrackData, t4);
             Array.Copy(LZ77.DecompressRange(TrackData, t1), 0, tilegfx, 4096 * 0, 4096);
             Array.Copy(LZ77.DecompressRange(TrackData, t2), 0, tilegfx, 4096 * 1, 4096);
             Array.Copy(LZ77.DecompressRange(TrackData, t3), 0, tilegfx, 4096 * 2, 4096);
@@ -74,14 +76,55 @@ namespace MkscEdit.Extract
             Array.Copy(TrackData, pal, rawpal, 0, 128);
             Palette palette = new Palette(rawpal);
             Tiles = Tile.GenerateTiles(tilegfx, palette);
+            byte [] t = PackData();
         }
-        public void PackData()
+        public byte[] PackData()
         {
+            #region Tiles
             byte[] testReversal = Tile.GetTileBytes(Tiles);
-            byte[] t1 = LZ77.CompressRange(testReversal[(4096*0)..(4096*1)],0,4096);
-            byte[] t2 = testReversal[(4096 * 1)..(4096 * 2)];
-            byte[] t3 = testReversal[(4096 * 2)..(4096 * 3)];
-            byte[] t4 = testReversal[(4096 * 3)..(4096 * 4)];
+            byte[] t1 = LZ77.CompressBytes(testReversal[(4096 * 0)..(4096 * 1)]);
+            byte[] t2 = LZ77.CompressBytes(testReversal[(4096 * 1)..(4096 * 2)]);
+            byte[] t3 = LZ77.CompressBytes(testReversal[(4096 * 2)..(4096 * 3)]);
+            byte[] t4 = LZ77.CompressBytes(testReversal[(4096 * 3)..(4096 * 4)]);
+            byte[] bytes = new byte[2*4 + t1.Length + t2.Length + t3.Length + t4.Length];
+            TileBlocks[0] = TileBlocks[0];
+            TileBlocks[1] = TileBlocks[0] + t1.Length;
+            TileBlocks[2] = TileBlocks[0] + t1.Length + t2.Length;
+            TileBlocks[3] = TileBlocks[0] + t1.Length + t2.Length + t3.Length;
+            Buffer.BlockCopy(t1, 0, bytes, 8, t1.Length);
+            Buffer.BlockCopy(t2, 0, bytes, 8 + t1.Length, t2.Length);
+            Buffer.BlockCopy(t3, 0, bytes, 8 + t1.Length + t2.Length, t3.Length);
+            Buffer.BlockCopy(t4, 0, bytes, 8 + t1.Length + t2.Length+t3.Length, t4.Length);
+            int offset = bytes.Length - tileLength;
+            List<byte> byte1 = new List<byte>();
+            byte1.AddRange(TrackData[0..TilesetPointerTable]);
+            byte1.AddRange(bytes);
+            byte1.AddRange(TrackData[(TilesetPointerTable + tileLength)..TrackData.Length]);
+
+
+            #endregion
+
+            return bytes;
+        }
+        public void OffsetDataAfter(int finalPos, int offset)
+        {
+            if (finalPos < TilesetPointerTable) TilesetPointerTable += offset;
+            if (finalPos < LayoutPointerTable) LayoutPointerTable += offset;
+            if (finalPos < PalettePointer) PalettePointer += offset;
+            if (finalPos < TileBehaviours) TileBehaviours += offset;
+            if (finalPos < ObjectsPointer) ObjectsPointer += offset;
+            if (finalPos < OverlayPointer) OverlayPointer += offset;
+            if (finalPos < ItemBoxesPointer) ItemBoxesPointer += offset;
+            for (int i = 0; i < TileBlocks.Length; i++)
+            {
+                if (finalPos < TileBlocks[i]) TileBlocks[i] += offset;
+            }
+            for (int i = 0; i < LayoutBlocks.Length; i++)
+            {
+                if (finalPos < LayoutBlocks[i]) LayoutBlocks[i] += offset;
+            }
+            if (finalPos < TrackData.Length) ; //Add offsetting track code
+
         }
         public static int LittleEndianInt(byte[] a)
         {
