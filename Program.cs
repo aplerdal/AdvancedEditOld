@@ -11,7 +11,7 @@ namespace MkscEdit;
 class Program{
     public static IntPtr Sans;
     public static byte[] file;
-    public static Offsets offsets;
+    public static Track[] tracks;
     public static Rom rom;
     public static IntPtr Renderer;
     public static IntPtr Window;
@@ -48,8 +48,7 @@ class Program{
                 rom = new Rom();
                 if (rom.OpenRom(str))
                 {
-                    offsets = new Offsets(file);
-                    rom.ExtractTileGraphics();
+                    new Offsets();
                     break;
                 }
                 
@@ -68,8 +67,17 @@ class Program{
                     case SDL_EventType.SDL_QUIT:
                         running = false;
                         break;
+                    case SDL_EventType.SDL_MOUSEBUTTONUP:
+                        trackEditor.MouseUp(e);
+                        break;
                     case SDL_EventType.SDL_MOUSEBUTTONDOWN:
                         trackEditor.MouseDown(e);
+                        break;
+                    case SDL_EventType.SDL_MOUSEWHEEL:
+                        trackEditor.ScrollWheel(e);
+                        break;
+                    case SDL_EventType.SDL_MOUSEMOTION:
+                        trackEditor.MouseMotion(e);
                         break;
                 }
             }
@@ -77,7 +85,7 @@ class Program{
             trackEditor.Update();
         
             // Sets the color that the screen will be cleared with.
-            SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 255);
+            SDL_SetRenderDrawColor(Renderer, 25, 25, 90, 255);
             SDL_RenderClear(Renderer);
 
             trackEditor.Draw();

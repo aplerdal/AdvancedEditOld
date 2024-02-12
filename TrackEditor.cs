@@ -1,5 +1,6 @@
 ﻿using MkscEdit.Compression;
 using MkscEdit.Extract;
+using MkscEdit.Types;
 using MkscEdit.UI;
 using static SDL2.SDL;
 
@@ -9,9 +10,11 @@ namespace MkscEdit
     {
         TilePalette tilePalette;
         TilePanel tilemap;
-        Tile tile;
+        UITile tile;
         int selectedTile = 0;
-        Track track = Track.PeachCircuit;
+        TrackId track = TrackId.PeachCircuit;
+        bool tilemapDragged = false;
+
         public TrackEditor()
         {
             SDL_Rect elementPosition = new SDL_Rect() { x = Program.WindowWidth - 256, y = 0, w = 256, h = 256 };
@@ -22,13 +25,16 @@ namespace MkscEdit
             tilemap = new TilePanel(elementPosition, new(0, 0));
             tilemap.tileSize = 4;
             tilemap.SetTrack(track);
-            tile = new Tile(new(0,0));
+            tile = new UITile(new(0,0));
             tile.SetTrack(track);
             byte[] layout = new byte[256*256];
             int currentOffset = 0;
-            foreach (var o in Program.offsets[track].LayoutBlocks)
+            int completeLength = 0;
+
+            foreach (var o in Program.tracks[(int)track].LayoutBlocks)
             {
-                var b = Program.rom.DecompressRange(Program.file, o);
+                completeLength += LZ77.DecompressedLength(Program.tracks[(int)track].TrackData,o);
+                var b = LZ77.DecompressRange(Program.tracks[(int)track].TrackData, o);
                 Array.Copy(b, 0, layout, currentOffset, b.Length);
                 currentOffset += b.Length;
             }
@@ -63,13 +69,45 @@ namespace MkscEdit
 
             tile.DrawElement();
         }
+        public void MouseMotion(SDL_Event e)
+        {
+            if (tilemapDragged == true)
+            {
+                tilemap.ContentPosition = new(tilemap.ContentPosition.X + e.motion.xrel, tilemap.ContentPosition.Y + e.motion.yrel);
+            }
+        }
         public void MouseDown(SDL_Event e)
         {
-            selectedTile = tilePalette.GetTile(e.motion.x, e.motion.y);
+            if (e.button.button == SDL_BUTTON_LEFT)
+            {
+                if (tilePalette.GetTile(e.motion.x, e.motion.y) > -1)
+                {
+                    selectedTile = tilePalette.GetTile(e.motion.x, e.motion.y);
+                }
+                if (tilemap.ElementPosition.Contains(e.motion.x, e.motion.y))
+                {
+                    tilemap.SetTile((byte)selectedTile, e.motion.x, e.motion.y);
+                }
+            }
+            if (e.button.button == SDL_BUTTON_MIDDLE)
+            {
+                tilemapDragged = true;
+            }
         }
-        void TestClick()
+        public void MouseUp(SDL_Event e)
         {
-            Console.WriteLine("Clicked!");
+            if (e.button.button == SDL_BUTTON_MIDDLE)
+            {
+                tilemapDragged = false;
+            }
+        }
+        public void ScrollWheel(SDL_Event e)
+        {
+            if (e.wheel.y != 0)
+            {
+                tilemap.tileSize += e.wheel.y / Math.Abs(e.wheel.y);
+                tilemap.tileSize = Math.Clamp(tilemap.tileSize, 1, 32);
+            }   
         }
     }
 }

@@ -27,18 +27,6 @@ namespace MkscEdit.Extract
             Program.file = t;
             return true;
         }
-        public unsafe byte[] DecompressRange(byte[] file, int startPos)
-        {
-            byte[] compData = new byte[4096];
-            fixed (byte* output = compData)
-            {
-                fixed (byte* rom = &file[startPos])
-                {
-                    if(!LZ77.Decompress(rom, output)) throw new Exception("Not decompressable");
-                }
-            }
-            return compData;
-        }
 
         public bool VerifyRom(byte[] file)
         {
@@ -49,30 +37,6 @@ namespace MkscEdit.Extract
             }
             return false;
 
-        }
-
-        public void ExtractTileGraphics()
-        {
-            tiles = new Tile[Enum.GetValues(typeof(Track)).Length][];
-            for (int t = 0; t < Enum.GetValues(typeof(Track)).Length; t++)
-            {
-                TrackOffset track = Program.offsets[t];
-                int t1 = track.TileBlocks[0];
-                int t2 = track.TileBlocks[1];
-                int t3 = track.TileBlocks[2];
-                int t4 = track.TileBlocks[3];
-                int pal = track.Palette;
-                byte[] tilegfx = new byte[4096 * 4];
-                Array.Copy(DecompressRange(Program.file, t1), 0, tilegfx, 4096 * 0, 4096);
-                Array.Copy(DecompressRange(Program.file, t2), 0, tilegfx, 4096 * 1, 4096);
-                Array.Copy(DecompressRange(Program.file, t3), 0, tilegfx, 4096 * 2, 4096);
-                Array.Copy(DecompressRange(Program.file, t4), 0, tilegfx, 4096 * 3, 4096);
-                byte[] rawpal = new byte[128];
-                Array.Copy(Program.file, pal, rawpal, 0, 128);
-                Palette palette = new Palette(rawpal);
-                Tile[] tilearr = Tile.GenerateTiles(tilegfx, palette);
-                tiles[t] = tilearr;
-            }
         }
     }
 }

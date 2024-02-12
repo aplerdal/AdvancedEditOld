@@ -35,6 +35,33 @@ namespace MkscEdit.Types {
             }
             return tiles;
         }
+        public static byte[] GetTileBytes(Tile[] tiles)
+        {
+            int totalIndices = tiles.Length * 64;
+            List<byte> indicesList = new List<byte>();
+
+            foreach (Tile tile in tiles)
+            {
+                byte[,] tileData = tile.indicies;
+
+                for (int y = 0; y < 8; y++)
+                {
+                    for (int x = 0; x < 8; x++)
+                    {
+                        if (indicesList.Count < totalIndices)
+                        {
+                            indicesList.Add(tileData[x, y]);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return indicesList.ToArray();
+        }
         public unsafe SDL_Surface* ToImage()
         {
             SDL_Surface* surface = (SDL_Surface*)SDL_CreateRGBSurface(0,8,8,32,0,0,0,0).ToPointer();

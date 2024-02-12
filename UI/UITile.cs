@@ -9,15 +9,15 @@ using static SDL2.SDL;
 
 namespace MkscEdit.UI
 {
-    class Tile
+    class UITile
     {
-        public Track trackId;
+        public TrackId trackId;
         public IntPtr tileAtlas;
         public Point ContentPosition;
         public byte tileIdx = 0;
         public int tileSize = 16;
 
-        public Tile(Point contentPosition)
+        public UITile(Point contentPosition)
         {
             tileAtlas = SDL_CreateTextureFromSurface(Program.Renderer, SDL_CreateRGBSurface(0, 8, 2048, 32, 0, 0, 0, 0));
             ContentPosition = contentPosition;
@@ -26,7 +26,7 @@ namespace MkscEdit.UI
         {
             tileIdx = tileIndex;
         }
-        public unsafe void SetTrack(Track track)
+        public unsafe void SetTrack(TrackId track)
         {
             trackId = track;
             IntPtr ta = SDL_CreateRGBSurface(0, 8, 2048, 32, 0, 0, 0, 0);

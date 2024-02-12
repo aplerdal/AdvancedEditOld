@@ -5,7 +5,7 @@ using static SDL2.SDL;
 namespace MkscEdit.UI{
     class TilePanel{
         public byte[,] indicies;
-        public Track trackId;
+        public TrackId trackId;
         public IntPtr tileAtlas;
         public SDL_Rect ElementPosition;
         public Point ContentPosition;
@@ -19,7 +19,7 @@ namespace MkscEdit.UI{
             ElementPosition = elementPosition;
             ContentPosition = contentPosition;
         }
-        public unsafe void SetTrack(Track track){
+        public unsafe void SetTrack(TrackId track){
             trackId = track;
             IntPtr ta = SDL_CreateRGBSurface(0,8,2048,32,0,0,0,0);
             for (int i = 0; i < Program.rom.tiles[(int)track].Length; i++)
@@ -47,13 +47,13 @@ namespace MkscEdit.UI{
             if (new SDL_Rect() {x=ContentPosition.X,y=ContentPosition.Y,w=tileSize*columns,h=tileSize*rows}.Contains(x,y)){
                 int tilex = (int)Math.Floor((decimal)(x-ContentPosition.X)/tileSize);
                 int tiley = (int)Math.Floor((decimal)(y-ContentPosition.Y)/tileSize);
-                int temp = tilex + tiley * columns;
-                indicies[(int)temp / 16, temp%16] = (byte)idx;
+                int temp = tilex + tiley * 256;
+                indicies[(int)temp / 256, temp%256] = (byte)idx;
             }
         }
         public void DrawElement(){
-            columns = (int)Math.Clamp(Math.Ceiling((decimal)ElementPosition.w / tileSize), 0, indicies.GetLength(0));
-            rows = (int)Math.Clamp(Math.Ceiling((decimal)ElementPosition.h / tileSize),0,indicies.GetLength(1));
+            columns = /*(int)Math.Clamp(Math.Ceiling((decimal)ElementPosition.w / tileSize), 0, */indicies.GetLength(0);
+            rows = /*(int)Math.Clamp(Math.Ceiling((decimal)ElementPosition.h / tileSize),0,*/indicies.GetLength(1);
 
             SDL_RenderSetClipRect(Program.Renderer,ref ElementPosition);
             for (int x = 0; x < columns; x++)

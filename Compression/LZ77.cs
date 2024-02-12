@@ -1,5 +1,7 @@
 // Based on NLZ-GBA's compression
 
+using MkscEdit.Extract;
+
 namespace MkscEdit.Compression
 {
     static class LZ77
@@ -171,7 +173,7 @@ namespace MkscEdit.Compression
         }
 
         /// <summary>
-        /// Gets the lenght of the compressed data in a stream
+        /// Gets the length of the compressed data in a stream
         /// </summary>
         /// <param name="br">The stream with data</param>
         /// <param name="offset">The position of the data in stream</param>
@@ -274,7 +276,7 @@ namespace MkscEdit.Compression
                 length += 4 - length % 4;
 
             return true;
-        } //Doesn't work
+        }
 
         /// <summary>
         /// 
@@ -306,9 +308,9 @@ namespace MkscEdit.Compression
         /// Compresses data with LZ77
         /// </summary>
         /// <param name="source">Pointer to beginning of the data</param>
-        /// <param name="lenght">Lenght of the data to compress in bytes</param>
+        /// <param name="length">Lenght of the data to compress in bytes</param>
         /// <returns>Array of bytes</returns>
-        static unsafe public byte[] Compress(byte* source, int lenght)
+        static unsafe public byte[] Compress(byte* source, int length)
         {
             int position = 0;
 
@@ -316,21 +318,21 @@ namespace MkscEdit.Compression
             CompressedData.Add(0x10);
 
             {
-                byte* pointer = (byte*)&lenght;
+                byte* pointer = (byte*)&length;
                 for (int i = 0; i < 3; i++)
                 {
                     CompressedData.Add(*(pointer++));
                 }
             }
 
-            while (position < lenght)
+            while (position < length)
             {
                 byte isCompressed = 0;
                 List<byte> tempList = new List<byte>();
 
                 for (int i = 0; i < BlockSize; i++)
                 {
-                    int[] searchResult = Search(source, position, lenght);
+                    int[] searchResult = Search(source, position, length);
 
                     if (searchResult[0] > 2)
                     {
@@ -497,6 +499,34 @@ namespace MkscEdit.Compression
                 }
             }
             return !(uncompPosition < size);
+        }
+        public static unsafe byte[] DecompressRange(byte[] file, int startPos)
+        {
+            byte[] compData = new byte[4096];
+            fixed (byte* output = compData)
+            {
+                fixed (byte* rom = &file[startPos])
+                {
+                    if (!LZ77.Decompress(rom, output)) throw new Exception("Not decompressable");
+                }
+            }
+            return compData;
+        }
+        public static unsafe byte[] CompressBytes(byte[] file)
+        {
+            fixed (byte* rom = &file[0])
+            {
+                return Compress(rom, file.Length);
+            }
+        }
+        public static unsafe int DecompressedLength(byte[] file, int startPos)
+        {
+            int length = -1;
+            fixed (byte* rom = &file[startPos])
+            {
+                if (!LZ77.GetCompressedDataLength(rom, out length)) throw new Exception("Not decompressable");
+            }
+            return length;
         }
     }
 }
