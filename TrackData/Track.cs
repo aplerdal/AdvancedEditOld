@@ -1,8 +1,11 @@
 using MkscEdit.Types;
 using MkscEdit.Compression;
 
-namespace MkscEdit.Extract
+namespace MkscEdit.TrackData
 {
+    /// <summary>
+    /// An object that stores all relevant data for each track.
+    /// </summary>
     public class Track
     {
         public byte[] TrackData;
@@ -24,10 +27,16 @@ namespace MkscEdit.Extract
         
         public Track(int address,int nextTrackAddr)
         {
+            //Load Track into seperate byte array
             TrackData = new byte[nextTrackAddr - address];
             Array.Copy(Program.file, address, TrackData, 0, nextTrackAddr - address);
             Address = address;
 
+            LoadOffsets();
+            LoadTiles();
+        }
+        public void LoadOffsets()
+        {
             TilesetPointerTable = LittleEndianInt(TrackData[0x80..0x84]);
             LayoutPointerTable = 0x100;
             PalettePointer = LittleEndianInt(TrackData[0x84..0x88]);
@@ -61,6 +70,10 @@ namespace MkscEdit.Extract
                 LayoutPointerTable + LittleEndianShort(TrackData[(LayoutPointerTable + 28)..(LayoutPointerTable + 30)]),
                 LayoutPointerTable + LittleEndianShort(TrackData[(LayoutPointerTable + 30)..(LayoutPointerTable + 32)]),
             ];
+        }
+        public void LoadTiles()
+        {
+            //Tiles
             int t1 = TileBlocks[0];
             int t2 = TileBlocks[1];
             int t3 = TileBlocks[2];
@@ -73,6 +86,8 @@ namespace MkscEdit.Extract
             Array.Copy(LZ77.DecompressRange(TrackData, t2), 0, tilegfx, 4096 * 1, 4096);
             Array.Copy(LZ77.DecompressRange(TrackData, t3), 0, tilegfx, 4096 * 2, 4096);
             Array.Copy(LZ77.DecompressRange(TrackData, t4), 0, tilegfx, 4096 * 3, 4096);
+
+            //Palette
             byte[] rawpal = new byte[128];
             Array.Copy(TrackData, pal, rawpal, 0, 128);
             Palette palette = new Palette(rawpal);
@@ -106,7 +121,8 @@ namespace MkscEdit.Extract
 
             return bytes;
         }
-        public static byte[] CompileRom(Track[] tracks){
+        public static byte[] CompileRom(Track[] tracks)
+        {
             int position = tracks[0].Address;
             List<byte> rom = new List<byte>();
             rom.AddRange(Program.file[0..position]);
@@ -135,7 +151,6 @@ namespace MkscEdit.Extract
             {
                 if (finalPos < LayoutBlocks[i]) LayoutBlocks[i] += offset;
             }
-            if (finalPos < TrackData.Length) ; //Add offsetting track code
 
         }
         public static int LittleEndianInt(byte[] a)
@@ -146,62 +161,9 @@ namespace MkscEdit.Extract
         {
             return ( a[1] << 8 | a[0]);
         }
-    }
-    public enum TrackId
-    {
-        SNESMarioCircuit1,
-        SNESDonutPlains1,
-        SNESGhostValley1,
-        SNESBowserCastle1,
-        //SNESMarioCircuit2,
-        SNESChocoIsland1,
-        //SNESGhostValley2,
-        //SNESDonutPlains2,
-        //SNESBowserCastle2,
-        //SNESMarioCircuit3,
-        SNESKoopaBeach1,
-        //SNESChocoIsland2,
-        SNESVanillaLake1,
-        //SNESBowserCastle3,
-        //SNESMarioCircuit4,
-        //SNESDonutPlains3,
-        //SNESKoopaBeach2,
-        //SNESGhostValley3,
-        //SNESVanillaLake2,
-        //SNESRainbowRoad,
-        //SNESBattleCourse1,
-        //SNESBattleCourse2,
-        //SNESBattleCourse3,
-        //SNESBattleCourse4,
-        PeachCircuit,
-        ShyGuyBeach,
-        SunsetWilds,
-        BowserCastle1,
-        LuigiCircuit,
-        RiversidePark,
-        YoshiDesert,
-        //BowserCastle2,
-        MarioCircuit,
-        //CheepCheepIsland,
-        RibbonRoad,
-        //BowserCastle3,
-        SnowLand,
-        BooLake,
-        CheeseLand,
-        RainbowRoad,
-        SkyGarden,
-        //BrokenPier,
-        //BowserCastle4,
-        //LakesidePark,
-        //BattleCourse1,
-        //BattleCourse2,
-        //BattleCourse3,
-        //BattleCourse4,
-        //TestTrack,
-    }
-    public class Offsets
-    {
-        public Offsets()
+
+        #region Tracks
+        public static GenerateTracks()
         {
             // commented tracks need to be fixed
             Program.tracks = [
@@ -256,5 +218,58 @@ namespace MkscEdit.Extract
                 //new TrackOffset(Track.TestTrack,        0x3017f8, 0x000010fc, 0x000010fc, 0x0000117c, 0x00001644, 0x00001600, 0x0000164c, 0x00001650),
             ];
         }
+        #endregion
+    }
+    public enum TrackId
+    {
+        SNESMarioCircuit1,
+        SNESDonutPlains1,
+        SNESGhostValley1,
+        SNESBowserCastle1,
+        //SNESMarioCircuit2,
+        SNESChocoIsland1,
+        //SNESGhostValley2,
+        //SNESDonutPlains2,
+        //SNESBowserCastle2,
+        //SNESMarioCircuit3,
+        SNESKoopaBeach1,
+        //SNESChocoIsland2,
+        SNESVanillaLake1,
+        //SNESBowserCastle3,
+        //SNESMarioCircuit4,
+        //SNESDonutPlains3,
+        //SNESKoopaBeach2,
+        //SNESGhostValley3,
+        //SNESVanillaLake2,
+        //SNESRainbowRoad,
+        //SNESBattleCourse1,
+        //SNESBattleCourse2,
+        //SNESBattleCourse3,
+        //SNESBattleCourse4,
+        PeachCircuit,
+        ShyGuyBeach,
+        SunsetWilds,
+        BowserCastle1,
+        LuigiCircuit,
+        RiversidePark,
+        YoshiDesert,
+        //BowserCastle2,
+        MarioCircuit,
+        //CheepCheepIsland,
+        RibbonRoad,
+        //BowserCastle3,
+        SnowLand,
+        BooLake,
+        CheeseLand,
+        RainbowRoad,
+        SkyGarden,
+        //BrokenPier,
+        //BowserCastle4,
+        //LakesidePark,
+        //BattleCourse1,
+        //BattleCourse2,
+        //BattleCourse3,
+        //BattleCourse4,
+        //TestTrack,
     }
 }

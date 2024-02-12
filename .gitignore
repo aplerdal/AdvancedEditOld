@@ -1,5 +1,6 @@
 /[Bb]in/
 /[Oo]bj/
 /.vs/
+/.vscode/
 *.gba
 *.sav
