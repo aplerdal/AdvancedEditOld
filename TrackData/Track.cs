@@ -45,8 +45,6 @@ namespace MkscEdit.TrackData
             LoadOffsets();
 
             LoadLayout();
-
-            PackData();
         }
         public void LoadOffsets()
         {
