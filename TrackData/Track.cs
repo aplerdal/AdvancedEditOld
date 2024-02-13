@@ -160,6 +160,10 @@ namespace MkscEdit.TrackData
         }
         public void PackData()
         {
+            if (address == 0x27f510 || address == 0x280580 || address == 0x281624 || address == 0x282c24)
+            {
+                return TrackData;
+            }
             List<byte> data = new List<byte>();
 
             byte[] indicies = new byte[Indicies.GetLength(0) * Indicies.GetLength(1)];
