@@ -42,6 +42,10 @@ namespace MkscEdit
                 tile.SetTile((byte)selectedTile);
             }
         }
+        public void Close()
+        {
+            Program.tracks[(int)track].PackData();
+        }
         public void Draw()
         {
             tilemap.DrawElement();

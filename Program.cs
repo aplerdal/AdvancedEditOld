@@ -82,6 +82,7 @@ class Program{
             SDL_RenderPresent(Renderer);
         }
         //Test code
+        trackEditor.Close();
         File.WriteAllBytes("MkscModified.gba", Track.CompileRom(tracks));
         
         // Clean up the resources that were created.

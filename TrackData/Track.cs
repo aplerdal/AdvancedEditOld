@@ -22,6 +22,8 @@ namespace MkscEdit.TrackData
         int TrackSize;
         public int[] TileBlocks;
         int tileLength;
+        int completeLength;
+        int layoutLength;
         public int[] LayoutBlocks;
         public byte[,] Indicies;
 
@@ -35,41 +37,15 @@ namespace MkscEdit.TrackData
             Array.Copy(Program.file, address, TrackData, 0, nextTrackAddr - address);
             Address = address;
 
+            if (address == 0x27f510 || address == 0x280580 || address == 0x281624 || address == 0x282c24)
+            {
+                return;
+            }
             LoadOffsets();
 
-            if (RepeatTiles == 0x00)
-            {
-                LoadLocalTiles();
-            }
-            else
-            {
-                LoadExternalTiles();
-            }
+            LoadLayout();
 
-            byte[] layout = new byte[TrackSize * TrackSize];
-            int currentOffset = 0;
-            int completeLength = 0;
-
-            foreach (var o in LayoutBlocks)
-            {
-                if (o != 256)
-                {
-                    completeLength += LZ77.DecompressedLength(TrackData, o);
-                    var b = LZ77.DecompressRange(TrackData, o);
-                    Array.Copy(b, 0, layout, currentOffset, b.Length);
-                    currentOffset += b.Length;
-                }
-            }
-
-            byte[,] output = new byte[TrackSize, TrackSize];
-            for (int i = 0; i < TrackSize; i++)
-            {
-                for (int j = 0; j < TrackSize; j++)
-                {
-                    output[i, j] = layout[i * TrackSize + j];
-                }
-            }
-            Indicies = output;
+            PackData();
         }
         public void LoadOffsets()
         {
@@ -109,6 +85,42 @@ namespace MkscEdit.TrackData
                 LayoutPointerTable + LittleEndianShort(TrackData[(LayoutPointerTable + 30)..(LayoutPointerTable + 32)]),
             ];
         }
+        public void LoadLayout()
+        {
+            if (RepeatTiles == 0x00)
+            {
+                LoadLocalTiles();
+            }
+            else
+            {
+                LoadExternalTiles();
+            }
+
+            byte[] layout = new byte[TrackSize * TrackSize];
+            int currentOffset = 0;
+
+            foreach (var o in LayoutBlocks)
+            {
+                if (o != 256)
+                {
+                    int len = LZ77.DecompressedLength(TrackData, o);
+                    completeLength += len;
+                    var b = LZ77.DecompressRange(TrackData, o);
+                    Array.Copy(b, 0, layout, currentOffset, b.Length);
+                    currentOffset += b.Length;
+                }
+            }
+
+            byte[,] output = new byte[TrackSize, TrackSize];
+            for (int i = 0; i < TrackSize; i++)
+            {
+                for (int j = 0; j < TrackSize; j++)
+                {
+                    output[i, j] = layout[i * TrackSize + j];
+                }
+            }
+            Indicies = output;
+        }
         public void LoadLocalTiles()
         {
             //Tiles
@@ -146,44 +158,53 @@ namespace MkscEdit.TrackData
             }
             
         }
-        public byte[] PackData()
+        public void PackData()
         {
-            #region Tiles
-            byte[] tiles = Tile.GetTileBytes(Tiles);
-            byte[] t1 = LZ77.CompressBytes(tiles[(4096 * 0)..(4096 * 1)]);
-            byte[] t2 = LZ77.CompressBytes(tiles[(4096 * 1)..(4096 * 2)]);
-            byte[] t3 = LZ77.CompressBytes(tiles[(4096 * 2)..(4096 * 3)]);
-            byte[] t4 = LZ77.CompressBytes(tiles[(4096 * 3)..(4096 * 4)]);
-            byte[] bytes = new byte[2*4 + t1.Length + t2.Length + t3.Length + t4.Length];
-            TileBlocks[0] = TileBlocks[0];
-            TileBlocks[1] = TileBlocks[0] + t1.Length;
-            TileBlocks[2] = TileBlocks[0] + t1.Length + t2.Length;
-            TileBlocks[3] = TileBlocks[0] + t1.Length + t2.Length + t3.Length;
-            Buffer.BlockCopy(t1, 0, bytes, 8, t1.Length);
-            Buffer.BlockCopy(t2, 0, bytes, 8 + t1.Length, t2.Length);
-            Buffer.BlockCopy(t3, 0, bytes, 8 + t1.Length + t2.Length, t3.Length);
-            Buffer.BlockCopy(t4, 0, bytes, 8 + t1.Length + t2.Length+t3.Length, t4.Length);
-            int offset = bytes.Length - tileLength;
-            List<byte> byte1 = new List<byte>();
-            byte1.AddRange(TrackData[0..TilesetPointerTable]);
-            byte1.AddRange(bytes);
-            byte1.AddRange(TrackData[(TilesetPointerTable + tileLength)..TrackData.Length]);
-            OffsetDataAfter(TilesetPointerTable+bytes.Length, offset);
-            #endregion
+            List<byte> data = new List<byte>();
 
-            return bytes;
+            byte[] indicies = new byte[Indicies.GetLength(0) * Indicies.GetLength(1)];
+            int write = 0;
+            for (int i = 0; i < Indicies.GetLength(0); i++)
+            {
+                for (int j = 0; j < Indicies.GetLength(1); j++)
+                {
+                    indicies[write++] = Indicies[i, j];
+                }
+            }
+            List<byte> rawLayout = new List<byte>();
+            rawLayout.AddRange(TrackData[LayoutPointerTable..(LayoutPointerTable + 16 * 2)]);
+            for (int i = 0; i < 4; i++)
+            {
+                byte[] compressed = LZ77.CompressBytes(indicies[(i * 4096)..((i + 1) * 4096)]);
+                rawLayout[i * 2] = ToLittleEndianShort((short)rawLayout.Count)[0];
+                rawLayout[i * 2 + 1] = ToLittleEndianShort((short)rawLayout.Count)[1];
+                rawLayout.AddRange(compressed);
+            }
+            OffsetDataAfter(TilesetPointerTable + rawLayout.Count, rawLayout.Count - layoutLength);
+
+            data.AddRange(TrackData[0..LayoutPointerTable]);
+            data.AddRange(rawLayout);
+            data.AddRange(TrackData[(LayoutPointerTable + rawLayout.Count)..TrackData.Length]);
+
+
+            TrackData = data.ToArray();
         }
         public static byte[] CompileRom(List<Track> tracks)
         {
+            int trackPointerTable = 0x258000;
             int position = tracks[0].Address;
             List<byte> rom = new List<byte>();
             rom.AddRange(Program.file[0..position]);
             for (int i = 0; i < tracks.Count; i++){
                 var track = tracks[i];
+                var temp = ToLittleEndianInt(position-0x258000);
+                rom[trackPointerTable + 4 * i + 0] = temp[0]; rom[trackPointerTable + 4 * i + 1] = temp[1];
+                rom[trackPointerTable + 4 * i + 2] = temp[2]; rom[trackPointerTable + 4 * i + 3] = temp[3];
                 track.Address = position;
                 rom.AddRange(track.TrackData);
                 position += track.TrackData.Length;
             }
+            rom.AddRange(Program.file[position..Program.file.Length]);
             return rom.ToArray();
         }
         public void OffsetDataAfter(int finalPos, int offset)
@@ -213,39 +234,45 @@ namespace MkscEdit.TrackData
         {
             return ( a[1] << 8 | a[0]);
         }
+        public static byte[] ToLittleEndianInt(int a)
+        {
+            byte[] bytes = BitConverter.GetBytes(a);
+
+            if (!BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(bytes);
+            }
+            return bytes;
+        }
+        public static byte[] ToLittleEndianShort(short a)
+        {
+            byte[] bytes = BitConverter.GetBytes(a);
+
+            if (!BitConverter.IsLittleEndian)
+            {
+                Array.Reverse(bytes);
+            }
+            return bytes;
+        }
 
         #region Tracks
         public static void GenerateTracks()
         {
             // commented tracks need to be fixed
             //Program.tracks = [
-            Program.tracks.Add(new Track(0x2580d4, 0x25b17c));
+            Program.tracks.Add(new Track(0x2580d4, 0x25b17c)); // SMC 1
             Program.tracks.Add(new Track(0x25b17c, 0x25e380));
             Program.tracks.Add(new Track(0x25e380, 0x260354));
             Program.tracks.Add(new Track(0x260354, 0x262c1c));
-
-            //v
             Program.tracks.Add(new Track(0x262c1c, 0x264348));
-            // ^
-
             Program.tracks.Add(new Track(0x264348, 0x266de8));
-
-            // v
             Program.tracks.Add(new Track(0x266de8, 0x268338));
             Program.tracks.Add(new Track(0x268338, 0x26a060));
             Program.tracks.Add(new Track(0x26a060, 0x26ba04));
             Program.tracks.Add(new Track(0x26ba04, 0x26d33c));
-            // ^
-
-            Program.tracks.Add(new Track(0x26d33c, 0x271634));
-
-            // v
+            Program.tracks.Add(new Track(0x26d33c, 0x26fd90));
             Program.tracks.Add(new Track(0x26fd90, 0x271634));
-            // ^
-
             Program.tracks.Add(new Track(0x271634, 0x273c68));
-
-            // v
             Program.tracks.Add(new Track(0x273c68, 0x2754f8));
             Program.tracks.Add(new Track(0x2754f8, 0x276e6c));
             Program.tracks.Add(new Track(0x276e6c, 0x278c70));
@@ -256,9 +283,7 @@ namespace MkscEdit.TrackData
             Program.tracks.Add(new Track(0x27f510, 0x280580));
             Program.tracks.Add(new Track(0x280580, 0x281624));
             Program.tracks.Add(new Track(0x281624, 0x282c24));
-            //Program.tracks.Add(new Track(0x282c24, 0x283d04));
-            // ^
-
+            Program.tracks.Add(new Track(0x282c24, 0x283d04));
             Program.tracks.Add(new Track(0x283d04, 0x28a020));
             Program.tracks.Add(new Track(0x28a020, 0x29044c));
             Program.tracks.Add(new Track(0x29044c, 0x29aadc));
@@ -266,30 +291,16 @@ namespace MkscEdit.TrackData
             Program.tracks.Add(new Track(0x29fc74, 0x2a6be8));
             Program.tracks.Add(new Track(0x2a6be8, 0x2ae488));
             Program.tracks.Add(new Track(0x2ae488, 0x2b58e8));
-
-            // v
             Program.tracks.Add(new Track(0x2b58e8, 0x2b8fa8));
-            // ^
-
             Program.tracks.Add(new Track(0x2b8fa8, 0x2bf16c));
-
-            // v
             Program.tracks.Add(new Track(0x2bf16c, 0x2c4e3c));
-            // ^
-
             Program.tracks.Add(new Track(0x2c4e3c, 0x2cb3f4));
-
-            // v
             Program.tracks.Add(new Track(0x2cb3f4, 0x2cecfc));
-            // ^
-
             Program.tracks.Add(new Track(0x2cecfc, 0x2d5f40));
             Program.tracks.Add(new Track(0x2d5f40, 0x2dbab0));
             Program.tracks.Add(new Track(0x2dbab0, 0x2e2940));
             Program.tracks.Add(new Track(0x2e2940, 0x2e7d08));
             Program.tracks.Add(new Track(0x2e7d08, 0x2ee838));
-
-            // v
             Program.tracks.Add(new Track(0x2ee838, 0x2f27b4));
             Program.tracks.Add(new Track(0x2f27b4, 0x2f6a20));
             Program.tracks.Add(new Track(0x2f6a20, 0x2fd014));
@@ -297,8 +308,6 @@ namespace MkscEdit.TrackData
             Program.tracks.Add(new Track(0x2fe234, 0x2ff378));
             Program.tracks.Add(new Track(0x2ff378, 0x300948));
             Program.tracks.Add(new Track(0x300948, 0x3017f8));
-                //new Track(0x3017f8),
-                // ^
             //];
         }
         #endregion
@@ -309,22 +318,15 @@ namespace MkscEdit.TrackData
         SNESDonutPlains1,
         SNESGhostValley1,
         SNESBowserCastle1,
-        
         SNESMarioCircuit2,
-        
         SNESChocoIsland1,
-        
         SNESGhostValley2,
         SNESDonutPlains2,
         SNESBowserCastle2,
         SNESMarioCircuit3,
-        
         SNESKoopaBeach1,
-        
         SNESChocoIsland2,
-        
         SNESVanillaLake1,
-        
         SNESBowserCastle3,
         SNESMarioCircuit4,
         SNESDonutPlains3,
@@ -335,7 +337,7 @@ namespace MkscEdit.TrackData
         SNESBattleCourse1,
         SNESBattleCourse2,
         SNESBattleCourse3,
-        //SNESBattleCourse4,
+        SNESBattleCourse4,
         
         PeachCircuit,
         ShyGuyBeach,
@@ -344,23 +346,16 @@ namespace MkscEdit.TrackData
         LuigiCircuit,
         RiversidePark,
         YoshiDesert,
-        
         BowserCastle2,
-        
         MarioCircuit,
-        
         CheepCheepIsland,
-        
         RibbonRoad,
-        
         BowserCastle3,
-        
         SnowLand,
         BooLake,
         CheeseLand,
         RainbowRoad,
         SkyGarden,
-        
         BrokenPier,
         BowserCastle4,
         LakesidePark,
