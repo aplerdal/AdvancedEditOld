@@ -220,9 +220,10 @@ namespace MkscEdit.TrackData
             return array;
         }
         public void WriteOffsets(){
-            RepeatTiles = LittleEndianInt(TrackData[0x30..0x34]);
-            TilesetPointerTable = LittleEndianInt(TrackData[0x80..0x84]);
-            LayoutPointerTable = 0x100;
+            Buffer.BlockCopy(ToLittleEndianInt(RepeatTiles),0,TrackData,0x30,4);
+            //RepeatTiles = LittleEndianInt(TrackData[0x30..0x34]);
+            Buffer.BlockCopy(ToLittleEndianInt(TilesetPointerTable),0,TrackData,0x80,4);
+            //TilesetPointerTable = LittleEndianInt(TrackData[0x80..0x84]);
             Buffer.BlockCopy(ToLittleEndianInt(PalettePointer),0,TrackData,0x84,4);
             // PalettePointer = LittleEndianInt(TrackData[0x84..0x88]);
             Buffer.BlockCopy(ToLittleEndianInt(TileBehaviours),0,TrackData,0x88,4);
