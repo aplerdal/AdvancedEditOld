@@ -17,6 +17,7 @@ namespace MkscEdit.TrackData
         public int TileBehaviours;
         public int ObjectsPointer;
         public int OverlayPointer;
+        public int MinimapPointer;
         public int ItemBoxesPointer;
         public int EndlinePointer;
         int TrackSize;
@@ -59,6 +60,7 @@ namespace MkscEdit.TrackData
             OverlayPointer = LittleEndianInt(TrackData[0x90..0x94]);
             ItemBoxesPointer = LittleEndianInt(TrackData[0x94..0x98]);
             EndlinePointer = LittleEndianInt(TrackData[0x98..0x9c]);
+            MinimapPointer = LittleEndianInt(TrackData[0xc4..0xc8]);
 
             TileBlocks = [
                 TilesetPointerTable + LittleEndianShort(TrackData[(TilesetPointerTable    )..(TilesetPointerTable + 2)]),
@@ -173,14 +175,16 @@ namespace MkscEdit.TrackData
             }
             List<byte> rawLayout = new List<byte>();
             rawLayout.AddRange(TrackData[LayoutPointerTable..(LayoutPointerTable + 16 * 2)]);
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < TrackSize*TrackSize/4096; i++)
             {
                 byte[] compressed = LZ77.CompressBytes(indicies[(i * 4096)..((i + 1) * 4096)]);
                 rawLayout[i * 2] = ToLittleEndianShort((short)rawLayout.Count)[0];
                 rawLayout[i * 2 + 1] = ToLittleEndianShort((short)rawLayout.Count)[1];
-                rawLayout.AddRange(compressed);
+                rawLayout.AddRange(TrimEnd(compressed));
+                while (rawLayout.Count%4!=0) rawLayout.Add(0);
             }
             OffsetDataAfter(TilesetPointerTable + rawLayout.Count, rawLayout.Count - layoutLength);
+            WriteOffsets();
 
             data.AddRange(TrackData[0..LayoutPointerTable]);
             data.AddRange(rawLayout);
@@ -207,6 +211,33 @@ namespace MkscEdit.TrackData
             rom.AddRange(Program.file[position..Program.file.Length]);
             return rom.ToArray();
         }
+        public static byte[] TrimEnd(byte[] array)
+        {
+            int lastIndex = Array.FindLastIndex(array, b => b != 0);
+
+            Array.Resize(ref array, lastIndex + 1);
+
+            return array;
+        }
+        public void WriteOffsets(){
+            RepeatTiles = LittleEndianInt(TrackData[0x30..0x34]);
+            TilesetPointerTable = LittleEndianInt(TrackData[0x80..0x84]);
+            LayoutPointerTable = 0x100;
+            Buffer.BlockCopy(ToLittleEndianInt(PalettePointer),0,TrackData,0x84,4);
+            // PalettePointer = LittleEndianInt(TrackData[0x84..0x88]);
+            Buffer.BlockCopy(ToLittleEndianInt(TileBehaviours),0,TrackData,0x88,4);
+            // TileBehaviours = LittleEndianInt(TrackData[0x88..0x8c]);
+            Buffer.BlockCopy(ToLittleEndianInt(ObjectsPointer),0,TrackData,0x8c,4);
+            // ObjectsPointer = LittleEndianInt(TrackData[0x8c..0x90]);
+            Buffer.BlockCopy(ToLittleEndianInt(OverlayPointer),0,TrackData,0x90,4);
+            // OverlayPointer = LittleEndianInt(TrackData[0x90..0x94]);
+            Buffer.BlockCopy(ToLittleEndianInt(ItemBoxesPointer),0,TrackData,0x94,4);
+            // ItemBoxesPointer = LittleEndianInt(TrackData[0x94..0x98]);
+            Buffer.BlockCopy(ToLittleEndianInt(EndlinePointer),0,TrackData,0x98,4);
+            // EndlinePointer = LittleEndianInt(TrackData[0x98..0x9c]);
+            Buffer.BlockCopy(ToLittleEndianInt(MinimapPointer),0,TrackData,0xc4,4);
+            // MinimapPointer = LittleEndianInt(TrackData[0xc4..0xc8]);
+        }
         public void OffsetDataAfter(int finalPos, int offset)
         {
             if (finalPos < TilesetPointerTable) TilesetPointerTable += offset;
@@ -216,6 +247,7 @@ namespace MkscEdit.TrackData
             if (finalPos < ObjectsPointer) ObjectsPointer += offset;
             if (finalPos < OverlayPointer) OverlayPointer += offset;
             if (finalPos < ItemBoxesPointer) ItemBoxesPointer += offset;
+            if (finalPos < MinimapPointer) MinimapPointer += offset;
             for (int i = 0; i < TileBlocks.Length; i++)
             {
                 if (finalPos < TileBlocks[i]) TileBlocks[i] += offset;
