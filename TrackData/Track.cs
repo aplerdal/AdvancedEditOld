@@ -43,7 +43,6 @@ namespace MkscEdit.TrackData
                 return;
             }
             LoadOffsets();
-
             LoadLayout();
         }
         public void LoadOffsets()
@@ -221,7 +220,8 @@ namespace MkscEdit.TrackData
 
             return array;
         }
-        public void WriteOffsets(){
+        public void WriteOffsets()
+        {
             Buffer.BlockCopy(ToLittleEndianInt(RepeatTiles),0,TrackData,0x30,4);
             //RepeatTiles = LittleEndianInt(TrackData[0x30..0x34]);
             Buffer.BlockCopy(ToLittleEndianInt(TilesetPointerTable),0,TrackData,0x80,4);
