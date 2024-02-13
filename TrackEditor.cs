@@ -25,29 +25,9 @@ namespace MkscEdit
             tilemap = new TilePanel(elementPosition, new(0, 0));
             tilemap.tileSize = 4;
             tilemap.SetTrack(track);
+            tilemap.indicies = Program.tracks[(int)track].Indicies;
             tile = new UITile(new(0,0));
             tile.SetTrack(track);
-            byte[] layout = new byte[256*256];
-            int currentOffset = 0;
-            int completeLength = 0;
-
-            foreach (var o in Program.tracks[(int)track].LayoutBlocks)
-            {
-                completeLength += LZ77.DecompressedLength(Program.tracks[(int)track].TrackData,o);
-                var b = LZ77.DecompressRange(Program.tracks[(int)track].TrackData, o);
-                Array.Copy(b, 0, layout, currentOffset, b.Length);
-                currentOffset += b.Length;
-            }
-            
-            byte[,] output = new byte[256, 256];
-            for (int i = 0; i < 256; i++)
-            {
-                for (int j = 0; j < 256; j++)
-                {
-                    output[i, j] = layout[i * 256 + j];
-                }
-            }
-            tilemap.indicies = output;
         }
         public void Update()
         {

@@ -9,7 +9,7 @@ using System.Diagnostics;
 namespace MkscEdit;
 class Program{
     public static byte[] file = new byte[0];
-    public static Track[] tracks = new Track[0];
+    public static List<Track> tracks = new List<Track>();
     public static IntPtr Renderer = IntPtr.Zero;
     public static IntPtr Window = IntPtr.Zero;
     public static int WindowWidth, WindowHeight;
@@ -36,7 +36,7 @@ class Program{
             {
                 if (Rom.OpenRom(str))
                 {
-                    new Offsets();
+                    Track.GenerateTracks();
                     break;
                 }
                 
