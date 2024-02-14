@@ -15,6 +15,9 @@ namespace MkscEdit
         TrackId track = TrackId.PeachCircuit;
         bool tilemapDragged = false;
 
+        // mouse
+        bool leftDown = false;
+
         public TrackEditor()
         {
             SDL_Rect elementPosition = new SDL_Rect() { x = Program.WindowWidth - 256, y = 0, w = 256, h = 256 };
@@ -36,10 +39,16 @@ namespace MkscEdit
             tilePalette.ElementPosition = new SDL_Rect() { x = Program.WindowWidth - 256, y = 0, w = 256, h = 256 };
             tilePalette.ContentPosition = new(Program.WindowWidth - 256, 0);
             SDL_GetMouseState(out x, out y);
+            
             tile.ContentPosition = new(x,y);
             if (selectedTile!=-1)
             {
                 tile.SetTile((byte)selectedTile);
+            }
+            if (leftDown){
+                if(tilemap.ElementPosition.Contains(x,y)){
+                    tilemap.SetTile((byte)selectedTile,x,y);
+                }
             }
         }
         public void Close()
@@ -64,13 +73,10 @@ namespace MkscEdit
         {
             if (e.button.button == SDL_BUTTON_LEFT)
             {
+                leftDown = true;
                 if (tilePalette.GetTile(e.motion.x, e.motion.y) > -1)
                 {
                     selectedTile = tilePalette.GetTile(e.motion.x, e.motion.y);
-                }
-                if (tilemap.ElementPosition.Contains(e.motion.x, e.motion.y))
-                {
-                    tilemap.SetTile((byte)selectedTile, e.motion.x, e.motion.y);
                 }
             }
             if (e.button.button == SDL_BUTTON_MIDDLE)
@@ -80,6 +86,10 @@ namespace MkscEdit
         }
         public void MouseUp(SDL_Event e)
         {
+            if (e.button.button == SDL_BUTTON_LEFT)
+            {
+                leftDown = false;
+            }
             if (e.button.button == SDL_BUTTON_MIDDLE)
             {
                 tilemapDragged = false;
