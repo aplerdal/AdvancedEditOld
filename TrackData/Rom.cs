@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using MkscEdit.Compression;
-using MkscEdit.Types;
+using AdvancedEdit.Compression;
+using AdvancedEdit.Types;
 using System.Diagnostics;
 
-namespace MkscEdit.TrackData
+namespace AdvancedEdit.TrackData
 {
     public static class Rom
     {

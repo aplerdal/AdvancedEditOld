@@ -1,6 +1,6 @@
 using static SDL2.SDL;
 
-namespace MkscEdit.Types {
+namespace AdvancedEdit.Types {
     public class Tile
     {
         public Palette palette;

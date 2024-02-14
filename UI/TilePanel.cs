@@ -1,8 +1,8 @@
 using System.Drawing;
-using MkscEdit.TrackData;
-using MkscEdit.Types;
+using AdvancedEdit.TrackData;
+using AdvancedEdit.Types;
 using static SDL2.SDL;
-namespace MkscEdit.UI{
+namespace AdvancedEdit.UI{
     class TilePanel{
         public byte[,] indicies;
         public TrackId trackId;

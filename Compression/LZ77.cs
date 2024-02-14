@@ -1,8 +1,8 @@
 // Based on NLZ-GBA's compression
 
-using MkscEdit.TrackData;
+using AdvancedEdit.TrackData;
 
-namespace MkscEdit.Compression
+namespace AdvancedEdit.Compression
 {
     static class LZ77
     {

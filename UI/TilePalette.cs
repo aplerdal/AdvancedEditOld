@@ -1,8 +1,8 @@
 using System.Drawing;
-using MkscEdit.TrackData;
-using MkscEdit.Types;
+using AdvancedEdit.TrackData;
+using AdvancedEdit.Types;
 using static SDL2.SDL;
-namespace MkscEdit.UI{
+namespace AdvancedEdit.UI{
     class TilePalette : TilePanel{
         public TilePalette( SDL_Rect elementPosition, Point contentPosition) : base(elementPosition,contentPosition) {
             indicies = new byte[16,16];

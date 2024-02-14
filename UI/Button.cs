@@ -1,6 +1,6 @@
-using MkscEdit.Types;
+using AdvancedEdit.Types;
 using static SDL2.SDL;
-namespace MkscEdit.UI{
+namespace AdvancedEdit.UI{
     public delegate void OnClick();
     class Button {
         public SDL_Rect elementPosition;

@@ -1,12 +1,12 @@
-﻿using MkscEdit.TrackData;
-using MkscEdit.Types;
-using MkscEdit.UI;
+﻿using AdvancedEdit.TrackData;
+using AdvancedEdit.Types;
+using AdvancedEdit.UI;
 using SDL2;
 using static SDL2.SDL;
 using NativeFileDialog.Extended;
 using System.Diagnostics;
 
-namespace MkscEdit;
+namespace AdvancedEdit;
 class Program{
     public static byte[] file = new byte[0];
     public static List<Track> tracks = new List<Track>();
@@ -19,7 +19,7 @@ class Program{
         if (SDL_Init(SDL.SDL_INIT_VIDEO) < 0) Console.WriteLine($"There was an issue initilizing SDL. {SDL_GetError()}");
 
         // Create a new window given a title, size, and passes it a flag indicating it should be shown.
-        Window = SDL_CreateWindow("MkscEdit", SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 1024, 1024, SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL_WindowFlags.SDL_WINDOW_SHOWN);
+        Window = SDL_CreateWindow("AdvancedEdit", SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 1024, 1024, SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL_WindowFlags.SDL_WINDOW_SHOWN);
          
         if (Window == IntPtr.Zero) Console.WriteLine($"There was an issue creating the window. {SDL_GetError()}");
         

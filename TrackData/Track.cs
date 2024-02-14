@@ -1,7 +1,7 @@
-using MkscEdit.Types;
-using MkscEdit.Compression;
+using AdvancedEdit.Types;
+using AdvancedEdit.Compression;
 
-namespace MkscEdit.TrackData
+namespace AdvancedEdit.TrackData
 {
     /// <summary>
     /// An object that stores all relevant data for each track.

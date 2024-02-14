@@ -1,6 +1,6 @@
 using static SDL2.SDL;
 
-namespace MkscEdit.Types
+namespace AdvancedEdit.Types
 {
     /// <summary>
     /// GBA native BGR color format (Blue Green Red)

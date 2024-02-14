@@ -1,8 +1,8 @@
-﻿using MkscEdit.Types;
+﻿using AdvancedEdit.Types;
 using static SDL2.SDL;
 using static SDL2.SDL_ttf;
 
-namespace MkscEdit.UI
+namespace AdvancedEdit.UI
 {
     // class TextButton
     // {

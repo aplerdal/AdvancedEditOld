@@ -1,10 +1,10 @@
-﻿using MkscEdit.Compression;
-using MkscEdit.TrackData;
-using MkscEdit.Types;
-using MkscEdit.UI;
+﻿using AdvancedEdit.Compression;
+using AdvancedEdit.TrackData;
+using AdvancedEdit.Types;
+using AdvancedEdit.UI;
 using static SDL2.SDL;
 
-namespace MkscEdit
+namespace AdvancedEdit
 {
     class TrackEditor
     {

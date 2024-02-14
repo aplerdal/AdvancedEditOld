@@ -1,4 +1,4 @@
-﻿using MkscEdit.TrackData;
+﻿using AdvancedEdit.TrackData;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static SDL2.SDL;
 
-namespace MkscEdit.UI
+namespace AdvancedEdit.UI
 {
     class UITile
     {
