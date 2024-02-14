@@ -11,19 +11,4 @@
     <PackageReference Include="NativeFileDialog.Extended" Version="1.1.2" />
     <PackageReference Include="Sayers.SDL2.Core" Version="1.0.11" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="C:\Users\apler\.nuget\packages\nativefiledialog.extended\1.1.2\contentFiles\any\net7.0\nfd.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="arial.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="mksc.gba">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 </Project>
