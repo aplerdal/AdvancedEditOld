@@ -351,6 +351,7 @@ namespace MkscEdit.Compression
                 CompressedData.Add(isCompressed);
                 CompressedData.AddRange(tempList);
             }
+            while (CompressedData.Count%4!=0) CompressedData.Add(0);
 
             return CompressedData.ToArray();
         }

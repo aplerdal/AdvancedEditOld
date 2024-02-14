@@ -18,8 +18,11 @@ namespace MkscEdit.TrackData
         public int ObjectsPointer;
         public int OverlayPointer;
         public int MinimapPointer;
+        public int AiZonesPointer;
         public int ItemBoxesPointer;
         public int EndlinePointer;
+        public int TreeGfx;
+        public int ObjectPalette;
         int TrackSize;
         public int[] TileBlocks;
         int tileLength;
@@ -58,6 +61,9 @@ namespace MkscEdit.TrackData
             ItemBoxesPointer = LittleEndianInt(TrackData[0x94..0x98]);
             EndlinePointer = LittleEndianInt(TrackData[0x98..0x9c]);
             MinimapPointer = LittleEndianInt(TrackData[0xc4..0xc8]);
+            AiZonesPointer = LittleEndianInt(TrackData[0xcc..0xd0]);
+            TreeGfx = LittleEndianInt(TrackData[0xe4..0xe8]);
+            ObjectPalette = LittleEndianInt(TrackData[0xe8..0xec]);
 
             TileBlocks = [
                 TilesetPointerTable + LittleEndianShort(TrackData[(TilesetPointerTable    )..(TilesetPointerTable + 2)]),
@@ -97,13 +103,14 @@ namespace MkscEdit.TrackData
 
             byte[] layout = new byte[TrackSize * TrackSize];
             int currentOffset = 0;
+            layoutLength = 32;
 
             foreach (var o in LayoutBlocks)
             {
                 if (o != 256)
                 {
                     int len = LZ77.DecompressedLength(TrackData, o);
-                    completeLength += len;
+                    layoutLength += len;
                     var b = LZ77.DecompressRange(TrackData, o);
                     Array.Copy(b, 0, layout, currentOffset, b.Length);
                     currentOffset += b.Length;
@@ -160,7 +167,7 @@ namespace MkscEdit.TrackData
         {
             if (Address == 0x27f510 || Address == 0x280580 || Address == 0x281624 || Address == 0x282c24)
             {
-                return;p
+                return;
             }
             List<byte> data = new List<byte>();
 
@@ -180,15 +187,29 @@ namespace MkscEdit.TrackData
                 byte[] compressed = LZ77.CompressBytes(indicies[(i * 4096)..((i + 1) * 4096)]);
                 rawLayout[i * 2] = ToLittleEndianShort((short)rawLayout.Count)[0];
                 rawLayout[i * 2 + 1] = ToLittleEndianShort((short)rawLayout.Count)[1];
-                rawLayout.AddRange(TrimEnd(compressed));
-                while (rawLayout.Count%4!=0) rawLayout.Add(0);
+                rawLayout.AddRange(compressed);
             }
-            OffsetDataAfter(TilesetPointerTable + rawLayout.Count, rawLayout.Count - layoutLength);
-            WriteOffsets();
+            int offset = rawLayout.Count - layoutLength;
+
+            Buffer.BlockCopy(ToLittleEndianInt(TilesetPointerTable + offset),0,TrackData,0x80,4);
+            Buffer.BlockCopy(ToLittleEndianInt(PalettePointer+ offset),0,TrackData,0x84,4);
+            Buffer.BlockCopy(ToLittleEndianInt(TileBehaviours + offset),0,TrackData,0x88,4);
+            Buffer.BlockCopy(ToLittleEndianInt(ObjectsPointer+ offset),0,TrackData,0x8c,4);
+            Buffer.BlockCopy(ToLittleEndianInt(OverlayPointer+ offset),0,TrackData,0x90,4);
+            Buffer.BlockCopy(ToLittleEndianInt(ItemBoxesPointer + offset),0,TrackData,0x94,4);
+            Buffer.BlockCopy(ToLittleEndianInt(EndlinePointer + offset),0,TrackData,0x98,4);
+            Buffer.BlockCopy(ToLittleEndianInt(MinimapPointer + offset),0,TrackData,0xc4,4);
+
+            Buffer.BlockCopy(ToLittleEndianInt(AiZonesPointer + offset),0,TrackData,0xcc,4);
+            Buffer.BlockCopy(ToLittleEndianInt(TreeGfx + offset),0,TrackData,0xe4,4);
+            Buffer.BlockCopy(ToLittleEndianInt(ObjectPalette + offset),0,TrackData,0xe8,4);
+            
+            //OffsetDataAfter(TilesetPointerTable, rawLayout.Count - layoutLength);
+            //WriteOffsets();
 
             data.AddRange(TrackData[0..LayoutPointerTable]);
             data.AddRange(rawLayout);
-            data.AddRange(TrackData[(LayoutPointerTable + rawLayout.Count)..TrackData.Length]);
+            data.AddRange(TrackData[(LayoutPointerTable + layoutLength)..TrackData.Length]);
 
 
             TrackData = data.ToArray();
@@ -210,14 +231,6 @@ namespace MkscEdit.TrackData
             }
             rom.AddRange(Program.file[position..Program.file.Length]);
             return rom.ToArray();
-        }
-        public static byte[] TrimEnd(byte[] array)
-        {
-            int lastIndex = Array.FindLastIndex(array, b => b != 0);
-
-            Array.Resize(ref array, lastIndex + 1);
-
-            return array;
         }
         public void WriteOffsets()
         {
