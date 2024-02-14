@@ -155,13 +155,12 @@ namespace MkscEdit.TrackData
                 t.palette = palette;
                 Tiles[i] = t;
             }
-            
         }
         public void PackData()
         {
             if (Address == 0x27f510 || Address == 0x280580 || Address == 0x281624 || Address == 0x282c24)
             {
-                return TrackData;
+                return;p
             }
             List<byte> data = new List<byte>();
 
