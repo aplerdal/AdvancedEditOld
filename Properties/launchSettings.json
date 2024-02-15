@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "AdvancedEdit": {
+      "commandName": "Project",
+      "hotReloadEnabled": false
+    }
+  }
+}

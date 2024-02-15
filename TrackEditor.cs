@@ -14,8 +14,6 @@ namespace AdvancedEdit
         int selectedTile = 0;
         TrackId track = TrackId.PeachCircuit;
         bool tilemapDragged = false;
-
-        // mouse
         bool leftDown = false;
 
         public TrackEditor()

@@ -305,57 +305,12 @@ namespace AdvancedEdit.TrackData
         #region Tracks
         public static void GenerateTracks()
         {
-            // commented tracks need to be fixed
-            //Program.tracks = [
-            Program.tracks.Add(new Track(0x2580d4, 0x25b17c)); // SMC 1
-            Program.tracks.Add(new Track(0x25b17c, 0x25e380));
-            Program.tracks.Add(new Track(0x25e380, 0x260354));
-            Program.tracks.Add(new Track(0x260354, 0x262c1c));
-            Program.tracks.Add(new Track(0x262c1c, 0x264348));
-            Program.tracks.Add(new Track(0x264348, 0x266de8));
-            Program.tracks.Add(new Track(0x266de8, 0x268338));
-            Program.tracks.Add(new Track(0x268338, 0x26a060));
-            Program.tracks.Add(new Track(0x26a060, 0x26ba04));
-            Program.tracks.Add(new Track(0x26ba04, 0x26d33c));
-            Program.tracks.Add(new Track(0x26d33c, 0x26fd90));
-            Program.tracks.Add(new Track(0x26fd90, 0x271634));
-            Program.tracks.Add(new Track(0x271634, 0x273c68));
-            Program.tracks.Add(new Track(0x273c68, 0x2754f8));
-            Program.tracks.Add(new Track(0x2754f8, 0x276e6c));
-            Program.tracks.Add(new Track(0x276e6c, 0x278c70));
-            Program.tracks.Add(new Track(0x278c70, 0x27a6c4));
-            Program.tracks.Add(new Track(0x27a6c4, 0x27bce0));
-            Program.tracks.Add(new Track(0x27bce0, 0x27d584));
-            Program.tracks.Add(new Track(0x27d584, 0x27f510));
-            Program.tracks.Add(new Track(0x27f510, 0x280580));
-            Program.tracks.Add(new Track(0x280580, 0x281624));
-            Program.tracks.Add(new Track(0x281624, 0x282c24));
-            Program.tracks.Add(new Track(0x282c24, 0x283d04));
-            Program.tracks.Add(new Track(0x283d04, 0x28a020));
-            Program.tracks.Add(new Track(0x28a020, 0x29044c));
-            Program.tracks.Add(new Track(0x29044c, 0x29aadc));
-            Program.tracks.Add(new Track(0x29aadc, 0x29fc74));
-            Program.tracks.Add(new Track(0x29fc74, 0x2a6be8));
-            Program.tracks.Add(new Track(0x2a6be8, 0x2ae488));
-            Program.tracks.Add(new Track(0x2ae488, 0x2b58e8));
-            Program.tracks.Add(new Track(0x2b58e8, 0x2b8fa8));
-            Program.tracks.Add(new Track(0x2b8fa8, 0x2bf16c));
-            Program.tracks.Add(new Track(0x2bf16c, 0x2c4e3c));
-            Program.tracks.Add(new Track(0x2c4e3c, 0x2cb3f4));
-            Program.tracks.Add(new Track(0x2cb3f4, 0x2cecfc));
-            Program.tracks.Add(new Track(0x2cecfc, 0x2d5f40));
-            Program.tracks.Add(new Track(0x2d5f40, 0x2dbab0));
-            Program.tracks.Add(new Track(0x2dbab0, 0x2e2940));
-            Program.tracks.Add(new Track(0x2e2940, 0x2e7d08));
-            Program.tracks.Add(new Track(0x2e7d08, 0x2ee838));
-            Program.tracks.Add(new Track(0x2ee838, 0x2f27b4));
-            Program.tracks.Add(new Track(0x2f27b4, 0x2f6a20));
-            Program.tracks.Add(new Track(0x2f6a20, 0x2fd014));
-            Program.tracks.Add(new Track(0x2fd014, 0x2fe234));
-            Program.tracks.Add(new Track(0x2fe234, 0x2ff378));
-            Program.tracks.Add(new Track(0x2ff378, 0x300948));
-            Program.tracks.Add(new Track(0x300948, 0x3017f8));
-            //];
+            int tracks = 0x258000;
+            for (int i = 0; i < 48; i++)
+            {
+                Track track = new Track(tracks + LittleEndianInt(Program.file[(tracks + i * 4)..(tracks + (i + 1) * 4)]), tracks + LittleEndianInt(Program.file[(tracks + (i + 1) * 4)..(tracks + (i + 2) * 4)]));
+                Program.tracks.Add(track);
+            }
         }
         #endregion
     }
@@ -410,6 +365,6 @@ namespace AdvancedEdit.TrackData
         BattleCourse2,
         BattleCourse3,
         BattleCourse4,
-        //TestTrack,
+        //TestTrack, ignore like a real chad
     }
 }
