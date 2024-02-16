@@ -12,4 +12,10 @@
     <PackageReference Include="NativeFileDialog.Extended" Version="1.1.2" />
     <PackageReference Include="Sayers.SDL2.Core" Version="1.0.11" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="C:\Users\apler\.nuget\packages\nativefiledialog.extended\1.1.2\contentFiles\any\net7.0\nfd.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

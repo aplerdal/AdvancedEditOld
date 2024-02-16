@@ -48,6 +48,24 @@ namespace AdvancedEdit
                     tilemap.SetTile((byte)selectedTile,x,y);
                 }
             }
+            if (Program.keyDown[(int)SDL_Keycode.SDLK_LCTRL] && Program.keyPress[(int)SDL_Keycode.SDLK_EQUALS])
+            {
+                track = track.Next();
+                while (Program.tracks[(int)track].Tiles == null) track = track.Next();
+                tilemap.SetTrack(track);
+                tilemap.indicies = Program.tracks[(int)track].Indicies;
+                tilePalette.SetTrack(track);
+                tile.SetTrack(track);
+            }
+            if (Program.keyDown[(int)SDL_Keycode.SDLK_LCTRL] && Program.keyPress[(int)SDL_Keycode.SDLK_MINUS])
+            {
+                track = track.Previous();
+                while (Program.tracks[(int)track].Tiles == null) track = track.Previous();
+                tilemap.SetTrack(track);
+                tilemap.indicies = Program.tracks[(int)track].Indicies;
+                tilePalette.SetTrack(track);
+                tile.SetTrack(track);
+            }
         }
         public void Close()
         {

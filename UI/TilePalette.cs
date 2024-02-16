@@ -12,7 +12,15 @@ namespace AdvancedEdit.UI{
                 indicies[(int)(i/16),(int)(i%16)] = (byte)i;
             }
         }
-        public new void DrawElement(){
+        public override void Update()
+        {
+            // No Updates
+        }
+        public override void Events(SDL_Event e)
+        {
+            // No events
+        }
+        public override void Draw(){
             SDL_RenderSetClipRect(Program.Renderer,ref ElementPosition);
             for (int x = 0; x < columns; x++)
             {

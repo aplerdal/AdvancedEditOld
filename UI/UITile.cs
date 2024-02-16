@@ -9,7 +9,7 @@ using static SDL2.SDL;
 
 namespace AdvancedEdit.UI
 {
-    class UITile
+    class UITile : UIElement
     {
         public TrackId trackId;
         public IntPtr tileAtlas;
@@ -41,7 +41,7 @@ namespace AdvancedEdit.UI
             SDL_DestroyTexture(tileAtlas);
             tileAtlas = SDL_CreateTextureFromSurface(Program.Renderer, ta);
         }
-        public void DrawElement()
+        public override void Draw()
         {
             SDL_Rect s = new SDL_Rect() { x = 0, y = tileIdx * 8, w = 8, h = 8 };
             SDL_Rect d = new SDL_Rect() { x = ContentPosition.X-tileSize/2, y = ContentPosition.Y-tileSize/2, w = tileSize, h = tileSize };

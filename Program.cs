@@ -13,6 +13,10 @@ class Program{
     public static IntPtr Renderer = IntPtr.Zero;
     public static IntPtr Window = IntPtr.Zero;
     public static int WindowWidth, WindowHeight;
+
+    public static Dictionary<int, bool> keyDown = new Dictionary<int, bool>();
+    public static Dictionary<int, bool> keyPress = new Dictionary<int, bool>();
+    public static Dictionary<int, bool> keyReleased = new Dictionary<int, bool>();
     static unsafe void Main(string[] args){
         #region Init SDL
         // Initilizes SDL.
@@ -28,7 +32,14 @@ class Program{
         
         var running = true;
         #endregion
-        
+
+        foreach (var key in Enum.GetValues(typeof(SDL_Keycode)))
+        {
+            keyDown.Add((int)key, false);
+            keyPress.Add((int)key, false);
+            keyReleased.Add((int)key, false);
+        }
+
         while (true)
         {
             string str = NFD.OpenDialog("", new Dictionary<string, string>() { { "Game Boy Advance ROM", "gba" } });
@@ -48,6 +59,11 @@ class Program{
         while (running)
         {
             // Check to see if there are any events and continue to do so until the queue is empty.
+            foreach (var i in keyReleased.Keys.ToList())
+            {
+                keyReleased[i] = false;
+                keyPress[i] = false;
+            }
             while (SDL_PollEvent(out SDL_Event e) == 1)
             {
                 switch (e.type)
@@ -66,6 +82,18 @@ class Program{
                         break;
                     case SDL_EventType.SDL_MOUSEMOTION:
                         trackEditor.MouseMotion(e);
+                        break;
+                    case SDL_EventType.SDL_KEYDOWN:
+                        if (keyDown[(int)e.key.keysym.sym] == false)
+                        {
+                            keyPress[(int)e.key.keysym.sym] = true;
+                        }
+                        keyDown[(int)e.key.keysym.sym] = true;
+                        break;
+                    case SDL_EventType.SDL_KEYUP:
+                        keyPress[(int)e.key.keysym.sym] = false;
+                        keyReleased[(int)e.key.keysym.sym] = true;
+                        keyDown[(int)e.key.keysym.sym] = false;
                         break;
                 }
             }

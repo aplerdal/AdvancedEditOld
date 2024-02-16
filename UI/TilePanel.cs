@@ -3,7 +3,7 @@ using AdvancedEdit.TrackData;
 using AdvancedEdit.Types;
 using static SDL2.SDL;
 namespace AdvancedEdit.UI{
-    class TilePanel{
+    class TilePanel : UIElement{
         public byte[,] indicies;
         public TrackId trackId;
         public IntPtr tileAtlas;
@@ -51,7 +51,15 @@ namespace AdvancedEdit.UI{
                 indicies[(int)temp / 256, temp%256] = (byte)idx;
             }
         }
-        public void DrawElement(){
+        public override void Update()
+        {
+            // No Updates
+        }
+        public override void Events(SDL_Event e)
+        {
+            // No events
+        }
+        public override void Draw(){
             columns = /*(int)Math.Clamp(Math.Ceiling((decimal)ElementPosition.w / tileSize), 0, */indicies.GetLength(0);
             rows = /*(int)Math.Clamp(Math.Ceiling((decimal)ElementPosition.h / tileSize),0,*/indicies.GetLength(1);
 
