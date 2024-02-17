@@ -41,6 +41,14 @@ namespace AdvancedEdit.UI
             SDL_DestroyTexture(tileAtlas);
             tileAtlas = SDL_CreateTextureFromSurface(Program.Renderer, ta);
         }
+        public override void Update()
+        {
+            // No Updates
+        }
+        public override void Events(SDL_Event e)
+        {
+            // No events
+        }
         public override void Draw()
         {
             SDL_Rect s = new SDL_Rect() { x = 0, y = tileIdx * 8, w = 8, h = 8 };

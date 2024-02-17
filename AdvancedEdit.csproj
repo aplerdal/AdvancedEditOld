@@ -14,8 +14,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="C:\Users\apler\.nuget\packages\nativefiledialog.extended\1.1.2\contentFiles\any\net7.0\nfd.dll">
+    <Content Update="nfd.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="test.bmp">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

@@ -16,8 +16,14 @@ namespace AdvancedEdit
         bool tilemapDragged = false;
         bool leftDown = false;
 
+        UIManager uiManager;
+
         public TrackEditor()
         {
+            uiManager = new UIManager();
+            var button = new Button(new SDL_Rect { x = Program.WindowWidth - 256, y = 256, w = 256, h = 256 }, SDL_CreateTextureFromSurface(Program.Renderer,SDL_LoadBMP("test.bmp")), null);
+            uiManager.AddElement(button);
+
             SDL_Rect elementPosition = new SDL_Rect() { x = Program.WindowWidth - 256, y = 0, w = 256, h = 256 };
             tilePalette = new TilePalette(elementPosition, new(Program.WindowWidth - 256, 0));
             tilePalette.SetTrack(track);
@@ -32,6 +38,7 @@ namespace AdvancedEdit
         }
         public void Update()
         {
+            uiManager.UpdateElements();
             int x, y;
             tilemap.ElementPosition = new SDL_Rect() { x = 0, y = 0, w = Program.WindowWidth - 256, h = Program.WindowHeight };
             tilePalette.ElementPosition = new SDL_Rect() { x = Program.WindowWidth - 256, y = 0, w = 256, h = 256 };
@@ -71,12 +78,33 @@ namespace AdvancedEdit
         {
             Program.tracks[(int)track].PackData();
         }
+        public void Events(SDL_Event e)
+        {
+            uiManager.ElementEvents(e);
+            switch (e.type)
+            {
+                case SDL_EventType.SDL_MOUSEBUTTONUP:
+                    MouseUp(e);
+                    break;
+                case SDL_EventType.SDL_MOUSEBUTTONDOWN:
+                    MouseDown(e);
+                    break;
+                case SDL_EventType.SDL_MOUSEWHEEL:
+                    ScrollWheel(e);
+                    break;
+                case SDL_EventType.SDL_MOUSEMOTION:
+                    MouseMotion(e);
+                    break;
+            }
+        }
         public void Draw()
         {
-            tilemap.DrawElement();
-            tilePalette.DrawElement();
+            uiManager.DrawElements();
+            tilemap.Draw();
+            tilePalette.Draw();
 
-            tile.DrawElement();
+            tile.Draw();
+            
         }
         public void MouseMotion(SDL_Event e)
         {

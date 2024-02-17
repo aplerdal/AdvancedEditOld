@@ -18,6 +18,7 @@ class Program{
     public static Dictionary<int, bool> keyPress = new Dictionary<int, bool>();
     public static Dictionary<int, bool> keyReleased = new Dictionary<int, bool>();
     static unsafe void Main(string[] args){
+
         #region Init SDL
         // Initilizes SDL.
         if (SDL_Init(SDL.SDL_INIT_VIDEO) < 0) Console.WriteLine($"There was an issue initilizing SDL. {SDL_GetError()}");
@@ -29,8 +30,6 @@ class Program{
         
         // Creates a new SDL hardware renderer using the default graphics device with VSYNC enabled.
         Renderer = SDL_CreateRenderer(Window, -1, SDL_RendererFlags.SDL_RENDERER_ACCELERATED | SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
-        
-        var running = true;
         #endregion
 
         foreach (var key in Enum.GetValues(typeof(SDL_Keycode)))
@@ -40,6 +39,7 @@ class Program{
             keyReleased.Add((int)key, false);
         }
 
+        // Open ROM
         while (true)
         {
             string str = NFD.OpenDialog("", new Dictionary<string, string>() { { "Game Boy Advance ROM", "gba" } });
@@ -53,9 +53,14 @@ class Program{
                 
             }
         }
+
+
         TrackEditor trackEditor = new TrackEditor();
+        UIManager uiManager = new UIManager();
 
         // Main loop for the program
+        var running = true;
+
         while (running)
         {
             // Check to see if there are any events and continue to do so until the queue is empty.
@@ -66,6 +71,7 @@ class Program{
             }
             while (SDL_PollEvent(out SDL_Event e) == 1)
             {
+                uiManager.ElementEvents(e);
                 switch (e.type)
                 {
                     case SDL_EventType.SDL_QUIT:
@@ -99,7 +105,7 @@ class Program{
             }
             SDL_GetWindowSize(Window, out WindowWidth, out WindowHeight);
             trackEditor.Update();
-        
+
             // Sets the color that the screen will be cleared with.
             SDL_SetRenderDrawColor(Renderer, 25, 25, 90, 255);
             SDL_RenderClear(Renderer);

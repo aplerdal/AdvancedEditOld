@@ -7,7 +7,7 @@ namespace AdvancedEdit.UI{
         public IntPtr texture;
         public OnClick onClick;
 
-        public Button(SDL_Rect elementPosition, IntPtr texture, OnClick onClick){
+        public Button(SDL_Rect elementPosition, IntPtr texture, OnClick? onClick){
             this.elementPosition= elementPosition;
             this.texture = texture;
             this.onClick = onClick;
@@ -23,7 +23,10 @@ namespace AdvancedEdit.UI{
                 case SDL_EventType.SDL_MOUSEBUTTONDOWN:
                     if (elementPosition.Contains(e.motion.x, e.motion.y))
                     {
-                        onClick();
+                        if (onClick != null)
+                        {
+                            onClick();
+                        }
                     }
                     break;
             }
