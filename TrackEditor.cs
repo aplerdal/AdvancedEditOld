@@ -1,7 +1,8 @@
-﻿using AdvancedEdit.Compression;
-using AdvancedEdit.TrackData;
+﻿using AdvancedEdit.TrackData;
 using AdvancedEdit.Types;
 using AdvancedEdit.UI;
+using System.Diagnostics;
+using System.Drawing;
 using static SDL2.SDL;
 
 namespace AdvancedEdit
@@ -15,6 +16,8 @@ namespace AdvancedEdit
         TrackId track = TrackId.PeachCircuit;
         bool tilemapDragged = false;
         bool leftDown = false;
+
+        private Point mousePosition = new(0, 0);
 
         UIManager uiManager;
 
@@ -112,6 +115,7 @@ namespace AdvancedEdit
             {
                 tilemap.ContentPosition = new(tilemap.ContentPosition.X + e.motion.xrel, tilemap.ContentPosition.Y + e.motion.yrel);
             }
+            mousePosition = new(e.motion.x, e.motion.y);
         }
         public void MouseDown(SDL_Event e)
         {
@@ -139,13 +143,25 @@ namespace AdvancedEdit
                 tilemapDragged = false;
             }
         }
+
+
         public void ScrollWheel(SDL_Event e)
         {
-            if (e.wheel.y != 0)
-            {
-                tilemap.tileSize += e.wheel.y / Math.Abs(e.wheel.y);
-                tilemap.tileSize = Math.Clamp(tilemap.tileSize, 1, 32);
-            }   
+            if (e.wheel.y == 0) return;
+
+            var scroll = e.wheel.y / Math.Abs(e.wheel.y);
+            tilemap.tileSize = Math.Clamp(tilemap.tileSize + scroll, 1, 32);
+
+            var offsetX = tilemap.rows * tilemap.tileSize / 2;
+            var offsetY = tilemap.columns * tilemap.tileSize / 2;
+
+            tilemap.ContentPosition = new Point
+            (
+                mousePosition.X - offsetX,
+                mousePosition.Y - offsetY
+            );
+
+            
         }
     }
 }
