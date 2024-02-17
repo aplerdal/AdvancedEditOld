@@ -150,15 +150,18 @@ namespace AdvancedEdit
             if (e.wheel.y == 0) return;
 
             var scroll = e.wheel.y / Math.Abs(e.wheel.y);
-            tilemap.tileSize = Math.Clamp(tilemap.tileSize + scroll, 1, 32);
+            double oldSize = tilemap.tileSize;
+            tilemap.tileSize = Math.Clamp(tilemap.tileSize + scroll, 2, 32);
 
-            var offsetX = tilemap.rows * tilemap.tileSize / 2;
-            var offsetY = tilemap.columns * tilemap.tileSize / 2;
+            double scaleFactor = tilemap.tileSize / oldSize -1;
+
+            var offsetX = mousePosition.X  * scaleFactor;
+            var offsetY = mousePosition.Y * scaleFactor;
 
             tilemap.ContentPosition = new Point
             (
-                mousePosition.X - offsetX,
-                mousePosition.Y - offsetY
+                (int)(tilemap.ContentPosition.X * (scaleFactor+1) - offsetX),
+                (int)(tilemap.ContentPosition.Y * (scaleFactor+1) - offsetY)
             );
 
             
