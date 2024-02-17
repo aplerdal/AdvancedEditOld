@@ -56,15 +56,5 @@ namespace AdvancedEdit.UI
             SDL_RenderCopy(Program.Renderer, tileAtlas, ref s, ref d);
             SDL_RenderSetClipRect(Program.Renderer, IntPtr.Zero);
         }
-
-        public override void Update()
-        {
-            // No Updates
-        }
-
-        public override void Events(SDL_Event e)
-        {
-            // No events
-        }
     }
 }
