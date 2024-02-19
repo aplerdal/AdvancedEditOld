@@ -14,6 +14,8 @@ class Program{
     public static IntPtr Window = IntPtr.Zero;
     public static int WindowWidth, WindowHeight;
 
+    public static IntPtr Font = IntPtr.Zero;
+
     public static Dictionary<int, bool> keyDown = new Dictionary<int, bool>();
     public static Dictionary<int, bool> keyPress = new Dictionary<int, bool>();
     public static Dictionary<int, bool> keyReleased = new Dictionary<int, bool>();
@@ -21,7 +23,7 @@ class Program{
 
         #region Init SDL
         // Initilizes SDL.
-        if (SDL_Init(SDL.SDL_INIT_VIDEO) < 0) Console.WriteLine($"There was an issue initilizing SDL. {SDL_GetError()}");
+        if (SDL_Init(SDL_INIT_VIDEO) < 0) Console.WriteLine($"There was an issue initilizing SDL. {SDL_GetError()}");
 
         // Create a new window given a title, size, and passes it a flag indicating it should be shown.
         Window = SDL_CreateWindow("AdvancedEdit", SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 1024, 1024, SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL_WindowFlags.SDL_WINDOW_SHOWN);
@@ -54,9 +56,11 @@ class Program{
             }
         }
 
+        SDL_GetWindowSize(Window, out WindowWidth, out WindowHeight);
+        SDL_ttf.TTF_Init();
+        Font = SDL_ttf.TTF_OpenFont("Font/roboto.ttf",12);
 
         TrackEditor trackEditor = new TrackEditor();
-        UIManager uiManager = new UIManager();
 
         // Main loop for the program
         var running = true;
@@ -71,23 +75,23 @@ class Program{
             }
             while (SDL_PollEvent(out SDL_Event e) == 1)
             {
-                uiManager.ElementEvents(e);
+                trackEditor.Events(e);
                 switch (e.type)
                 {
                     case SDL_EventType.SDL_QUIT:
                         running = false;
                         break;
                     case SDL_EventType.SDL_MOUSEBUTTONUP:
-                        trackEditor.MouseUp(e);
+                        //trackEditor.MouseUp(e);
                         break;
                     case SDL_EventType.SDL_MOUSEBUTTONDOWN:
-                        trackEditor.MouseDown(e);
+                        //trackEditor.MouseDown(e);
                         break;
                     case SDL_EventType.SDL_MOUSEWHEEL:
-                        trackEditor.ScrollWheel(e);
+                        //trackEditor.ScrollWheel(e);
                         break;
                     case SDL_EventType.SDL_MOUSEMOTION:
-                        trackEditor.MouseMotion(e);
+                        //trackEditor.MouseMotion(e);
                         break;
                     case SDL_EventType.SDL_KEYDOWN:
                         if (keyDown[(int)e.key.keysym.sym] == false)

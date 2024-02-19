@@ -24,10 +24,14 @@ namespace AdvancedEdit
         public TrackEditor()
         {
             uiManager = new UIManager();
-            var button = new Button(new SDL_Rect { x = Program.WindowWidth - 256, y = 256, w = 256, h = 256 }, SDL_CreateTextureFromSurface(Program.Renderer,SDL_LoadBMP("test.bmp")), null);
+            var button = new Dropdown<int>(
+                new SDL_Rect(Program.WindowWidth - 256, 256, 256, 32),
+                new SDL_Color(64,64,64,255),
+                new List<int>() { 0,1,2,3 }
+            );;
             uiManager.AddElement(button);
 
-            SDL_Rect elementPosition = new SDL_Rect() { x = Program.WindowWidth - 256, y = 0, w = 256, h = 256 };
+            SDL_Rect elementPosition = new SDL_Rect(Program.WindowWidth - 256,0,256,256);
             tilePalette = new TilePalette(elementPosition, new(Program.WindowWidth - 256, 0));
             tilePalette.SetTrack(track);
 
