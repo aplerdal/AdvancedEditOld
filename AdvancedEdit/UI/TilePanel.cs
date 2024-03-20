@@ -89,7 +89,7 @@ namespace AdvancedEdit.UI
         {
             ImGui.Begin("TilePanel");
             mapSize = new Vector2I(indicies.GetLength(0), indicies.GetLength(1));
-            RenderTarget2D renderTexture = new Texture2D(AdvancedEditor.gd, (int)ImGui.GetWindowSize().X, (int)ImGui.GetWindowSize().Y);
+            RenderTarget2D renderTexture = new RenderTarget2D(AdvancedEditor.gd, (int)ImGui.GetWindowSize().X, (int)ImGui.GetWindowSize().Y);
             AdvancedEditor.gd.SetRenderTarget(renderTexture);
             AdvancedEditor.gd.Clear(Color.CornflowerBlue);
 
@@ -100,7 +100,7 @@ namespace AdvancedEdit.UI
                 for (int y = 0; y < mapSize.Y; y++)
                 {
                     Texture2D tile = tiles[indicies[y, x]];
-                    Rectangle dest = new Rectangle(x * tileSize + ContentPosition.X,y * tileSize + ContentPosition.Y, tileSize, tileSize);
+                    Rectangle dest = new Rectangle(x * tileSize + contentPosition.X,y * tileSize + contentPosition.Y, tileSize, tileSize);
                     AdvancedEditor.spriteBatch.Draw(tile, dest, Color.White);
                 }
             }
@@ -110,7 +110,7 @@ namespace AdvancedEdit.UI
 
             IntPtr targetPtr = AdvancedEditor.GuiRenderer.BindTexture(renderTexture);
 
-            ImGui.SetCursorPosition(ImGui.GetWindowPos());
+            ImGui.SetCursorPos(ImGui.GetWindowPos());
             ImGui.Image(targetPtr, ImGui.GetWindowSize());
             ImGui.End();
         }
