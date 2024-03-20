@@ -1,30 +1,27 @@
-﻿using AdvancedEdit.TrackData;
+using AdvancedEdit.TrackData;
 using AdvancedEdit.Types;
+
 using ImGuiNET;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
 using System;
 
-namespace AdvancedEdit.UI
-{
-    class TilePanel
-    {
-        public byte[,] indicies;
+namespace AdvancedEdit.UI{
+    class TilePalette{
+        int[,] indicies = new int[16,16];
         public TrackId trackId;
         public Texture2D[] tiles;
         public int tileSize = 8;
-        public Vector2I mapSize;
+        public Vector2I mapSize = new(16,16);
 
-        // The position of the tiles relative to the current imgui window
-        public Vector2I contentPosition;
-
-        public TilePanel()
+        public TilePalette()
         {
-            indicies = new byte[0, 0];
-            tiles = new Texture2D[256];
+            for (int i = 0; i<256; i++){
+                indicies[(int)(i/16),(int)(i%16)] = (byte)i;
+            }
         }
-
         /// <summary>
         /// Sets the TilePanel's tiles and palette to the given track's
         /// </summary>
@@ -52,13 +49,13 @@ namespace AdvancedEdit.UI
             var relPosition = position - winPos;
             if (ImGui.IsWindowHovered())
             {
-                if ((relPosition.X >= contentPosition.X) &&
-                    (relPosition.Y >= contentPosition.Y) &&
-                    (relPosition.X <= (contentPosition.X + tileSize*mapSize.X)) && 
-                    (relPosition.Y <= (contentPosition.Y + tileSize*mapSize.Y)))
+                if ((relPosition.X >= 0) &&
+                    (relPosition.Y >= 0) &&
+                    (relPosition.X <= (tileSize*mapSize.X)) && 
+                    (relPosition.Y <= (tileSize*mapSize.Y)))
                 {
-                    int tilex = (int)Math.Floor((decimal)(relPosition.X - contentPosition.X) / tileSize);
-                    int tiley = (int)Math.Floor((decimal)(relPosition.Y - contentPosition.Y) / tileSize);
+                    int tilex = (int)Math.Floor((decimal)relPosition.X/tileSize);
+                    int tiley = (int)Math.Floor((decimal)relPosition.Y/tileSize);
                     int temp = tilex + tiley * mapSize.X;
                     return indicies[(int)temp / 16, temp % 16];
                 }
@@ -73,13 +70,13 @@ namespace AdvancedEdit.UI
             if (idx == -1) return;
             if (ImGui.IsWindowHovered())
             {
-                if ((relPosition.X >= contentPosition.X) &&
-                    (relPosition.Y >= contentPosition.Y) &&
-                    (relPosition.X <= (contentPosition.X + tileSize * mapSize.X)) &&
-                    (relPosition.Y <= (contentPosition.Y + tileSize * mapSize.Y)))
+                if ((relPosition.X >= 0) &&
+                    (relPosition.Y >= 0) &&
+                    (relPosition.X <= (tileSize * mapSize.X)) &&
+                    (relPosition.Y <= (tileSize * mapSize.Y)))
                 {
-                    int tilex = (int)Math.Floor((decimal)(relPosition.X - contentPosition.X) / tileSize);
-                    int tiley = (int)Math.Floor((decimal)(relPosition.Y - contentPosition.Y) / tileSize);
+                    int tilex = (int)Math.Floor((decimal)relPosition.X / tileSize);
+                    int tiley = (int)Math.Floor((decimal)relPosition.Y / tileSize);
                     int temp = tilex + tiley * mapSize.X;
                     indicies[(int)temp / 16, temp % 16] = (byte)idx;
                 }
@@ -100,7 +97,7 @@ namespace AdvancedEdit.UI
                 for (int y = 0; y < mapSize.Y; y++)
                 {
                     Texture2D tile = tiles[indicies[y, x]];
-                    Rectangle dest = new Rectangle(x * tileSize + contentPosition.X,y * tileSize + contentPosition.Y, tileSize, tileSize);
+                    Rectangle dest = new Rectangle(x * tileSize,y * tileSize, tileSize, tileSize);
                     AdvancedEditor.spriteBatch.Draw(tile, dest, Color.White);
                 }
             }

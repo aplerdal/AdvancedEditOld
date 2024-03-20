@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudio,csharp
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,csharp
+# Custom ignore rules
+/.mono/
 
 ### Csharp ###
 ## Ignore Visual Studio temporary files, build results, and
