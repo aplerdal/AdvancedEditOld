@@ -25,8 +25,8 @@ namespace AdvancedEdit.UI
                             if (Rom.OpenRom(str))
                             {
                                 Track.GenerateTracks();
+                                AdvancedEditor.loaded = true;
                             }
-                            AdvancedEditor.loaded = true;
                         }
                     }
 
@@ -51,8 +51,10 @@ namespace AdvancedEdit.UI
 
                     ImGui.EndMenu();
                 }
+
                 if (ImGui.BeginMenu("Track"))
                 {
+                    if (AdvancedEditor.loaded) ImGui.BeginDisabled();
                     if(ImGui.MenuItem("Set Track")){
                         if(ImGui.MenuItem("Mushroom Cup")){
                             if (ImGui.MenuItem("Peach Circuit")){
@@ -125,6 +127,7 @@ namespace AdvancedEdit.UI
                             }
                         }
                     }
+                    if (AdvancedEditor.loaded) ImGui.EndDisabled();
                 }
 
                 ImGui.EndMainMenuBar();
