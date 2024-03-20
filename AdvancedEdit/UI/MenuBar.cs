@@ -29,14 +29,14 @@ namespace AdvancedEdit.UI
                             AdvancedEditor.loaded = true;
                         }
                     }
+
+                    if (AdvancedEditor.loaded) ImGui.BeginDisabled();
                     if (ImGui.MenuItem("Save", "Ctrl+S"))
                     {
-                        if (AdvancedEditor.loaded)
-                        {
-                            File.WriteAllBytes("MkscModified.gba", Track.CompileRom(AdvancedEditor.tracks));
-                        }
+                        File.WriteAllBytes("MkscModified.gba", Track.CompileRom(AdvancedEditor.tracks));
                     }
-                    if (ImGui.MenuItem("Save as.."))
+
+                    if (ImGui.MenuItem("Save as..", "Ctrl+Shift+S"))
                     {
                         if (AdvancedEditor.loaded)
                         {
@@ -47,8 +47,86 @@ namespace AdvancedEdit.UI
                             }
                         }
                     }
+                    if (AdvancedEditor.loaded) ImGui.EndDisabled();
+
                     ImGui.EndMenu();
                 }
+                if (ImGui.BeginMenu("Track"))
+                {
+                    if(ImGui.MenuItem("Set Track")){
+                        if(ImGui.MenuItem("Mushroom Cup")){
+                            if (ImGui.MenuItem("Peach Circuit")){
+
+                            }
+                            if (ImGui.MenuItem("Shy Guy Beach")){
+
+                            }
+                            if (ImGui.MenuItem("Riverside Park")){
+
+                            }
+                            if (ImGui.MenuItem("Bowser Castle 1")){
+
+                            }
+                        }
+                        if (ImGui.MenuItem("Flower Cup")){
+                            if (ImGui.MenuItem("Mario Circuit")){
+
+                            }
+                            if (ImGui.MenuItem("Boo Lake")){
+
+                            }
+                            if (ImGui.MenuItem("Cheese Land")){
+
+                            }
+                            if (ImGui.MenuItem("Bowser Castle")){
+
+                            }
+                        }
+                        if (ImGui.MenuItem("Lightning Cup")){
+                            if (ImGui.MenuItem("Luigi Circuit")){
+
+                            }
+                            if (ImGui.MenuItem("Sky Garden")){
+
+                            }
+                            if (ImGui.MenuItem("Cheep Cheep Island")){
+
+                            }
+                            if (ImGui.MenuItem("Sunset Wilds")){
+
+                            }
+                        }
+                        if (ImGui.MenuItem("Star Cup")){
+                            if (ImGui.MenuItem("Snow Land")){
+
+                            }
+                            if (ImGui.MenuItem("Ribbon Road")){
+
+                            }
+                            if (ImGui.MenuItem("Yoshi Desert")){
+
+                            }
+                            if (ImGui.MenuItem("Bowser Castle 3")){
+
+                            }
+                        }
+                        if (ImGui.MenuItem("Special Cup")){
+                            if (ImGui.MenuItem("Lakeside Park")){
+
+                            }
+                            if (ImGui.MenuItem("Broken Pier")){
+
+                            }
+                            if (ImGui.MenuItem("Bowser Castle 4")){
+
+                            }
+                            if (ImGui.MenuItem("Rainbow Road")){
+
+                            }
+                        }
+                    }
+                }
+
                 ImGui.EndMainMenuBar();
             }
         }
