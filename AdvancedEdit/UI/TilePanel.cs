@@ -87,19 +87,32 @@ namespace AdvancedEdit.UI
         }
         public void Draw()
         {
-            /* TODO
             ImGui.Begin("TilePanel");
             mapSize = new Vector2I(indicies.GetLength(0), indicies.GetLength(1));
-            Texture2D renderTexture = new Texture2D(AdvancedEditor.gd, (int)ImGui.GetWindowSize().X, (int)ImGui.GetWindowSize().Y);
-            for (int x = 0; x < columns; x++)
+            RenderTarget2D renderTexture = new Texture2D(AdvancedEditor.gd, (int)ImGui.GetWindowSize().X, (int)ImGui.GetWindowSize().Y);
+            AdvancedEditor.gd.SetRenderTarget(renderTexture);
+            AdvancedEditor.gd.Clear(Color.CornflowerBlue);
+
+            AdvancedEditor.spriteBatch.Begin();
+
+            for (int x = 0; x < mapSize.X; x++)
             {
-                for (int y = 0; y < rows; y++)
+                for (int y = 0; y < mapSize.Y; y++)
                 {
-                    SDL_Rect s = new SDL_Rect() { x = 0, y = indicies[y, x] * 8, w = 8, h = 8 };
-                    SDL_Rect d = new SDL_Rect() { x = x * tileSize + ContentPosition.X, y = y * tileSize + ContentPosition.Y, w = tileSize, h = tileSize };
-                    SDL_RenderCopy(Program.Renderer, tileAtlas, ref s, ref d);
+                    Texture2D tile = tiles[indicies[y, x]];
+                    Rectangle dest = new Rectangle(x * tileSize + ContentPosition.X,y * tileSize + ContentPosition.Y, tileSize, tileSize);
+                    AdvancedEditor.spriteBatch.Draw(tile, dest, Color.White);
                 }
-            }*/ 
+            }
+            
+            AdvancedEditor.spriteBatch.End();
+            AdvancedEditor.gd.SetRenderTarget(null);
+
+            IntPtr targetPtr = AdvancedEditor.GuiRenderer.BindTexture(renderTexture);
+
+            ImGui.SetCursorPosition(ImGui.GetWindowPos());
+            ImGui.Image(targetPtr, ImGui.GetWindowSize());
+            ImGui.End();
         }
     }
 }

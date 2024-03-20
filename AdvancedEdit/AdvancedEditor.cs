@@ -25,7 +25,7 @@ namespace AdvancedEdit
         public static GraphicsDeviceManager graphics;
         public static GraphicsDevice gd;
         public static SpriteBatch spriteBatch;
-        ImGuiRenderer GuiRenderer;
+        public static ImGuiRenderer GuiRenderer;
         bool WasResized = false;
 
         public AdvancedEditor()
