@@ -30,7 +30,7 @@ namespace AdvancedEdit.UI
                         }
                     }
 
-                    if (AdvancedEditor.loaded) ImGui.BeginDisabled();
+                    ImGui.BeginDisabled(!AdvancedEditor.loaded);
                     if (ImGui.MenuItem("Save", "Ctrl+S"))
                     {
                         File.WriteAllBytes("MkscModified.gba", Track.CompileRom(AdvancedEditor.tracks));
@@ -47,16 +47,16 @@ namespace AdvancedEdit.UI
                             }
                         }
                     }
-                    if (AdvancedEditor.loaded) ImGui.EndDisabled();
+                    ImGui.EndDisabled();
 
                     ImGui.EndMenu();
                 }
 
                 if (ImGui.BeginMenu("Track"))
                 {
-                    if (AdvancedEditor.loaded) ImGui.BeginDisabled();
-                    if(ImGui.MenuItem("Set Track")){
-                        if(ImGui.MenuItem("Mushroom Cup")){
+                    ImGui.BeginDisabled(!AdvancedEditor.loaded);
+                    if (ImGui.BeginMenu("Set Track")){
+                        if(ImGui.BeginMenu("Mushroom Cup")){
                             if (ImGui.MenuItem("Peach Circuit")){
 
                             }
@@ -69,8 +69,10 @@ namespace AdvancedEdit.UI
                             if (ImGui.MenuItem("Bowser Castle 1")){
 
                             }
+                            ImGui.EndMenu();
                         }
-                        if (ImGui.MenuItem("Flower Cup")){
+
+                        if (ImGui.BeginMenu("Flower Cup")){
                             if (ImGui.MenuItem("Mario Circuit")){
 
                             }
@@ -83,8 +85,10 @@ namespace AdvancedEdit.UI
                             if (ImGui.MenuItem("Bowser Castle")){
 
                             }
+                            ImGui.EndMenu();
                         }
-                        if (ImGui.MenuItem("Lightning Cup")){
+
+                        if (ImGui.BeginMenu("Lightning Cup")){
                             if (ImGui.MenuItem("Luigi Circuit")){
 
                             }
@@ -97,8 +101,10 @@ namespace AdvancedEdit.UI
                             if (ImGui.MenuItem("Sunset Wilds")){
 
                             }
+                            ImGui.EndMenu();
                         }
-                        if (ImGui.MenuItem("Star Cup")){
+
+                        if (ImGui.BeginMenu("Star Cup")){
                             if (ImGui.MenuItem("Snow Land")){
 
                             }
@@ -111,8 +117,10 @@ namespace AdvancedEdit.UI
                             if (ImGui.MenuItem("Bowser Castle 3")){
 
                             }
+                            ImGui.EndMenu();
                         }
-                        if (ImGui.MenuItem("Special Cup")){
+
+                        if (ImGui.BeginMenu("Special Cup")){
                             if (ImGui.MenuItem("Lakeside Park")){
 
                             }
@@ -125,10 +133,16 @@ namespace AdvancedEdit.UI
                             if (ImGui.MenuItem("Rainbow Road")){
 
                             }
+                            ImGui.EndMenu();
                         }
+                        
+                        ImGui.EndMenu();
                     }
-                    if (AdvancedEditor.loaded) ImGui.EndDisabled();
+                    ImGui.EndDisabled();
+                    
+                    ImGui.EndMenu();
                 }
+                
 
                 ImGui.EndMainMenuBar();
             }

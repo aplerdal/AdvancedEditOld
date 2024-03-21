@@ -13,7 +13,6 @@ class UiManager{
         tilePalette.SetTrack(TrackId.PeachCircuit);
     }
     public void Draw(){
-        MenuBar.Draw();
         if (AdvancedEditor.loaded){
             tilePalette.Draw();
         }

@@ -7,14 +7,18 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using System;
+using System.Numerics;
 
 namespace AdvancedEdit.UI{
     class TilePalette{
         int[,] indicies = new int[16,16];
         public TrackId trackId;
-        public Texture2D[] tiles;
+        public Texture2D[] tiles = new Texture2D[256];
         public int tileSize = 8;
         public Vector2I mapSize = new(16,16);
+        RenderTarget2D renderTarget = new RenderTarget2D(AdvancedEditor.gd, 16 * 8, 16 * 8);
+        System.Numerics.Vector2 relPos;
+        IntPtr targetPtr;
 
         public TilePalette()
         {
@@ -42,7 +46,7 @@ namespace AdvancedEdit.UI{
         /// </summary>
         /// <param name="position">The absolute to fetch</param>
         /// <returns></returns>
-        public int GetTile(Vector2 position)
+        public int GetTile(System.Numerics.Vector2 position)
         {
             var winPos = ImGui.GetWindowPos();
             var winSize = ImGui.GetWindowSize();
@@ -62,7 +66,7 @@ namespace AdvancedEdit.UI{
             }
             return -1;
         }
-        public void SetTile(int idx, Vector2 position)
+        public void SetTile(int idx, System.Numerics.Vector2 position)
         {
             var winPos = ImGui.GetWindowPos();
             var winSize = ImGui.GetWindowSize();
@@ -82,15 +86,18 @@ namespace AdvancedEdit.UI{
                 }
             }
         }
+        public static unsafe void Square(ImGuiSizeCallbackData* data)
+        {
+            data->DesiredSize.X = data->DesiredSize.Y = Math.Max(data->CurrentSize.X, data->CurrentSize.Y);
+        }
         public void Draw()
         {
             ImGui.Begin("TilePanel");
             mapSize = new Vector2I(indicies.GetLength(0), indicies.GetLength(1));
-            RenderTarget2D renderTexture = new RenderTarget2D(AdvancedEditor.gd, (int)ImGui.GetWindowSize().X, (int)ImGui.GetWindowSize().Y);
-            AdvancedEditor.gd.SetRenderTarget(renderTexture);
-            AdvancedEditor.gd.Clear(Color.CornflowerBlue);
+            AdvancedEditor.gd.SetRenderTarget(renderTarget);
+            AdvancedEditor.gd.Clear(Color.Transparent);
 
-            AdvancedEditor.spriteBatch.Begin();
+            AdvancedEditor.spriteBatch.Begin(samplerState: new SamplerState() { Filter=TextureFilter.MinLinearMagPointMipPoint});
 
             for (int x = 0; x < mapSize.X; x++)
             {
@@ -105,10 +112,10 @@ namespace AdvancedEdit.UI{
             AdvancedEditor.spriteBatch.End();
             AdvancedEditor.gd.SetRenderTarget(null);
 
-            IntPtr targetPtr = AdvancedEditor.GuiRenderer.BindTexture(renderTexture);
-
-            ImGui.SetCursorPos(ImGui.GetWindowPos());
-            ImGui.Image(targetPtr, ImGui.GetWindowSize());
+            if (targetPtr != IntPtr.Zero) AdvancedEditor.GuiRenderer.UnbindTexture(targetPtr);
+            targetPtr = AdvancedEditor.GuiRenderer.BindTexture(renderTarget);
+            ImGui.Image(targetPtr, ImGui.GetWindowSize() - 2*ImGui.GetCursorPos());
+            // get cursor pos as use as relative pos
             ImGui.End();
         }
     }

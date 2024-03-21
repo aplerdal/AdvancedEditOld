@@ -26,7 +26,7 @@ namespace AdvancedEdit.Types
         }
         public Color ToColor()
         {
-            return new Color((byte)(b * 8), (byte)(g * 8), (byte)(r * 8),(byte)255);
+            return new Color((byte)(r * 8), (byte)(g * 8), (byte)(b * 8),(byte)255);
         }
     }
 }

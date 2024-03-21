@@ -18,6 +18,8 @@ namespace AdvancedEdit
     {
         //Editor Vars
         public static bool loaded;
+        bool intialized = false;
+        UiManager uiManager;
         public static byte[] file = new byte[0];
         public static List<Track> tracks = new List<Track>();
 
@@ -27,6 +29,7 @@ namespace AdvancedEdit
         public static SpriteBatch spriteBatch;
         public static ImGuiRenderer GuiRenderer;
         bool WasResized = false;
+        
 
         public AdvancedEditor()
         {
@@ -57,6 +60,8 @@ namespace AdvancedEdit
             GuiRenderer.RebuildFontAtlas();
 
             ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+            gd = graphics.GraphicsDevice;
+
 
             base.Initialize();
         }
@@ -90,6 +95,11 @@ namespace AdvancedEdit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (loaded && !intialized)
+            {
+                intialized = true;
+                uiManager = new UiManager();
+            }
             //update logic
             if (WasResized)
             {
@@ -132,8 +142,9 @@ namespace AdvancedEdit
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            GraphicsDevice.SetRenderTarget(null);
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
+            
             //Framerate
             float frameRate = 1 / (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -146,10 +157,9 @@ namespace AdvancedEdit
             GuiRenderer.BeginLayout(gameTime);
 
             //Render UI
-
-            ImGui.ShowStyleEditor();
-
             MenuBar.Draw();
+            if (loaded && intialized)
+                uiManager.Draw();
 
             //ImGui End
             GuiRenderer.EndLayout();

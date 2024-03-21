@@ -87,6 +87,7 @@ namespace AdvancedEdit.UI
         }
         public void Draw()
         {
+            //TODO Fix memory leak - F
             ImGui.Begin("TilePanel");
             mapSize = new Vector2I(indicies.GetLength(0), indicies.GetLength(1));
             RenderTarget2D renderTexture = new RenderTarget2D(AdvancedEditor.gd, (int)ImGui.GetWindowSize().X, (int)ImGui.GetWindowSize().Y);
