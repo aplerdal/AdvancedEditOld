@@ -114,7 +114,8 @@ namespace AdvancedEdit.UI{
 
             if (targetPtr != IntPtr.Zero) AdvancedEditor.GuiRenderer.UnbindTexture(targetPtr);
             targetPtr = AdvancedEditor.GuiRenderer.BindTexture(renderTarget);
-            ImGui.Image(targetPtr, ImGui.GetWindowSize() - 2*ImGui.GetCursorPos());
+            var Scale = ImGui.GetWindowSize() - 2 * ImGui.GetCursorPos();
+            ImGui.Image(targetPtr, new System.Numerics.Vector2(Math.Min(Scale.X,Scale.Y), Math.Min(Scale.X, Scale.Y)));
             // get cursor pos as use as relative pos
             ImGui.End();
         }
