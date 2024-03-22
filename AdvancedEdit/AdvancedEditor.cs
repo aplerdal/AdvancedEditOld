@@ -152,7 +152,7 @@ namespace AdvancedEdit
 
             base.Draw(gameTime);
 
-
+            spriteBatch.Begin(samplerState:SamplerState.PointClamp);
             //ImGui Begin
             GuiRenderer.BeginLayout(gameTime);
 
@@ -163,6 +163,7 @@ namespace AdvancedEdit
 
             //ImGui End
             GuiRenderer.EndLayout();
+            spriteBatch.End();
         }
 
         #region DrawMonoGameWindowVariables

@@ -13,7 +13,7 @@ namespace AdvancedEdit.UI
         public byte[,] indicies;
         public TrackId trackId;
         public Texture2D[] tiles;
-        public int tileSize = 8;
+        public int tileSize = 16;
         public Vector2I mapSize;
 
         // The position of the tiles relative to the current imgui window
