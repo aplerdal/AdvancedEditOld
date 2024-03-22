@@ -22,12 +22,13 @@ using ImGuiNET;
 namespace AdvancedEdit.UI;
 
 class Settings{
-    public static void Draw(){
+    int undoMemoryLen;
+    public void Draw(){
         ImGui.Begin("Settings");
 
-        if (ImGui.Button("Change Style")){
-            ImGui.ShowStyleEditor();
-        }
+        // TODO add search (filter) for settings
+
+        ImGui.InputInt("Undo Memory Length", ref undoMemoryLen);
 
         ImGui.End();
     }

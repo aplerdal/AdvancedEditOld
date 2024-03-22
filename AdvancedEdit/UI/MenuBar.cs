@@ -71,6 +71,19 @@ namespace AdvancedEdit.UI
                     ImGui.EndMenu();
                 }
 
+                if (ImGui.BeginMenu("Edit"))
+                {
+                    if (ImGUi.BeginMenu("Undo", "Ctrl+Z")){
+                        
+                    }
+                    if (ImGUI.BeginMenu("Redo", "Ctrl+Y")){
+
+                    }
+                    if (ImGui.BeginMenu("Clear Track")){
+                        
+                    }
+                }
+
                 if (ImGui.BeginMenu("Track"))
                 {
                     ImGui.BeginDisabled(!AdvancedEditor.loaded);
@@ -160,6 +173,11 @@ namespace AdvancedEdit.UI
                     ImGui.EndDisabled();
                     
                     ImGui.EndMenu();
+                }
+
+                if (ImGui.BeginMenu("View"))
+                {
+
                 }
                 
 
