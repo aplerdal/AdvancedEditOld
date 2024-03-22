@@ -1,5 +1,5 @@
 # AdvancedEditor
-A Mario Kart: Super Circuit track editor.
+A Mario Kart: Super Circuit track editor using MonoGame and ImGui
 
 for use with a rom with a sha1 hash of `9d327c030c3e2d9007990518594f70c3340ac56f`
 
@@ -10,6 +10,6 @@ for use with a rom with a sha1 hash of `9d327c030c3e2d9007990518594f70c3340ac56f
 - [ ] Handle animated tiles
 - [ ] Replace Track Names
 - [ ] Replace Track Pictures
-- [ ] "Rally Sign" editor
-- [ ] Listen for more ideas!
+- [ ] Upcoming turn sign editor
 - [ ] Fill / Reset Track
+- [ ] Listen for more ideas!
