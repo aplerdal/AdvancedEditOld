@@ -36,8 +36,8 @@ namespace AdvancedEdit
     public class AdvancedEditor : Game
     {
         //Editor Vars
-        public static bool loaded;
-        bool intialized = false;
+        public static bool loaded = false;
+        public static bool intialized = false;
         UiManager uiManager;
         public static byte[] file = new byte[0];
         public static List<Track> tracks = new List<Track>();
@@ -79,9 +79,10 @@ namespace AdvancedEdit
             GuiRenderer.RebuildFontAtlas();
 
             ImGui.GetIO().ConfigFlags |= ImGuiConfigFlags.DockingEnable;
+            ImGui.GetIO().ConfigWindowsMoveFromTitleBarOnly = true;
             gd = graphics.GraphicsDevice;
 
-
+            uiManager = new UiManager();
             base.Initialize();
         }
 
@@ -117,42 +118,20 @@ namespace AdvancedEdit
             if (loaded && !intialized)
             {
                 intialized = true;
-                uiManager = new UiManager();
+                uiManager.Init();
             }
             //update logic
             if (WasResized)
             {
-                string new_resolution = resolution[select_res];
-
-                int res_width = int.Parse(new_resolution.Split('x')[0]);
-                int res_height = int.Parse(new_resolution.Split('x')[1]);
-
                 graphics.PreferredBackBufferWidth = Window.ClientBounds.Width; //1920;
                 graphics.PreferredBackBufferHeight = Window.ClientBounds.Height; //1080;
 
                 graphics.ApplyChanges();
 
                 WasResized = false;
-                current_res = select_res;
             }
 
             base.Update(gameTime);
-        }
-
-        private void DrawModel(Model model, Matrix world, Matrix view, Matrix projection)
-        {
-            foreach (ModelMesh mesh in model.Meshes)
-            {
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.TextureEnabled = false;
-                    effect.EnableDefaultLighting();
-                    effect.World = world;
-                    effect.View = view;
-                    effect.Projection = projection;
-                }
-                mesh.Draw();
-            }
         }
 
         /// <summary>
@@ -176,26 +155,11 @@ namespace AdvancedEdit
             GuiRenderer.BeginLayout(gameTime);
 
             //Render UI
-            MenuBar.Draw();
-            if (loaded && intialized)
-                uiManager.Draw();
+            uiManager.Draw();
 
             //ImGui End
             GuiRenderer.EndLayout();
             spriteBatch.End();
         }
-
-        #region DrawMonoGameWindowVariables
-        bool show_main_window = true;
-        bool exit_app = false;
-        int current_res = 0;
-        int select_res = 0;
-        int render_model = 1;
-        string[] resolution = { "1024x768", "1280x720", "1280x960", "1366x768", "1440x1080", "1680x1050", "1600x1200", "1920x1080" };
-        Vec4 monogame_color = new Vec4(231.0f / 255.0f, 60.0f / 255.0f, 0.0f / 255.0f, 200.0f / 255.0f);
-        Vec4 monogame_framebg = new Vec4(227.0f / 255.0f, 227.0f / 255.0f, 227.0f / 255.0f, 255.0f / 255.0f);
-        Vec4 color_black = new Vec4(0.0f / 255.0f, 0.0f / 0.0f, 0.0f / 255.0f, 200.0f / 255.0f);
-        Vec4 color_white = new Vec4(255.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f, 242.0f / 255.0f);
-        #endregion
     }
 }

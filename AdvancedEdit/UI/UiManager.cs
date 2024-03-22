@@ -19,21 +19,65 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using AdvancedEdit.TrackData;
 using AdvancedEdit.Types;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 namespace AdvancedEdit.UI;
 
 class UiManager{
-    TrackId currentTrack {get; set;}
     TilePalette tilePalette;
+    TrackPanel trackPanel;
+
+    //Track Variables
+    public Texture2D[] tiles = new Texture2D[256];
+    public IntPtr[] tileTextures = new IntPtr[256];
+    public byte[,] indicies = new byte[0,0];
+
+    TrackId trackId;
+    TrackId newTrack;
+
+    public byte selectedTile;
+
     public UiManager(){
-        Init();
+        selectedTile = 0;
     }
     public void Init(){
         tilePalette = new TilePalette();
-        tilePalette.SetTrack(TrackId.PeachCircuit);
+        trackPanel = new TrackPanel();
+        SetTrack(TrackId.PeachCircuit);
     }
     public void Draw(){
-        if (AdvancedEditor.loaded){
-            tilePalette.Draw();
+        MenuBar.Draw(ref newTrack);
+        if(newTrack != trackId)
+        {
+            SetTrack(newTrack);
+        }
+        if (AdvancedEditor.intialized){
+            tilePalette.Draw(tileTextures, ref selectedTile);
+            trackPanel.Draw(tileTextures, indicies, ref selectedTile);
+        }
+    }
+
+    /// <summary>
+    /// Sets the tiles, palette, and indicies to the given track's
+    /// </summary>
+    /// <param name="trackId">Id of new track</param>
+    public void SetTrack(TrackId trackId)
+    {
+        this.newTrack = trackId;
+        this.trackId = trackId;
+
+        indicies = AdvancedEditor.tracks[(int)trackId].Indicies;
+        for (int i = 0; i < AdvancedEditor.tracks[(int)trackId].Tiles.Length; i++)
+        {
+            //Load Tile texture
+            if (tileTextures[i] != IntPtr.Zero)
+            {
+                AdvancedEditor.GuiRenderer.UnbindTexture(tileTextures[i]);
+            }
+            Texture2D tile = AdvancedEditor.tracks[(int)trackId].Tiles[i].ToImage(AdvancedEditor.gd);
+            tileTextures[i] = AdvancedEditor.GuiRenderer.BindTexture(tile);
+
+            tiles[i] = tile;
         }
     }
 }

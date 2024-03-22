@@ -30,13 +30,11 @@ using System.Numerics;
 
 namespace AdvancedEdit.UI{
     class TilePalette{
-        int[,] indicies = new int[16,16];
-        public TrackId trackId;
-        public Texture2D[] tiles = new Texture2D[256];
-        public IntPtr[] tileTextures = new IntPtr[256];
+        //public Texture2D[] tiles = new Texture2D[256];
+        //public IntPtr[] tileTextures = new IntPtr[256];
         public int tileSize = 16;
         public Vector2I mapSize = new(16,16);
-        public byte selectedTile;
+        //public byte selectedTile;
 
         //ImGui items
         private int brushSize;
@@ -44,36 +42,10 @@ namespace AdvancedEdit.UI{
 
         public TilePalette()
         {
-            for (int i = 0; i<256; i++){
-                indicies[(int)(i/16),(int)(i%16)] = (byte)i;
-            }
-            selectedTile = 0;
         }
-        /// <summary>
-        /// Sets the TilePanel's tiles and palette to the given track's
-        /// </summary>
-        /// <param name="trackId">Id of new track</param>
-        public void SetTrack(TrackId trackId)
+        public void Draw(IntPtr[] tileTextures, ref byte selectedTile)
         {
-            this.trackId = trackId;
-            for (int i = 0; i < AdvancedEditor.tracks[(int)trackId].Tiles.Length; i++)
-            {
-                //Load Tile texture
-                if (tileTextures[i] != IntPtr.Zero){
-                    AdvancedEditor.GuiRenderer.UnbindTexture(tileTextures[i]);
-                }
-                Texture2D tile = AdvancedEditor.tracks[(int)trackId].Tiles[i].ToImage(AdvancedEditor.gd);
-                tileTextures[i] = AdvancedEditor.GuiRenderer.BindTexture(tile);
-
-                tiles[i] = tile;
-            }
-        }
-        public void Draw()
-        {
-            ImGui.Begin("TilePanel");
-            var usableArea = ImGui.GetWindowSize() - 2 * ImGui.GetCursorPos();
-            var areaStart = ImGui.GetCursorPos();
-            Vector2I layout = new((int)Math.Floor(usableArea.X/tileSize), (int)Math.Ceiling(256/Math.Floor(usableArea.X/tileSize)));
+            ImGui.Begin("Brush");
 
             float windowVisibleX = ImGui.GetWindowPos().X + ImGui.GetContentRegionMax().X;
             ImGuiStylePtr style = ImGui.GetStyle();

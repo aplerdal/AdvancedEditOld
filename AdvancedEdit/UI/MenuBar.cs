@@ -29,7 +29,7 @@ namespace AdvancedEdit.UI
 {
     class MenuBar
     {
-        public static void Draw()
+        public static void Draw(ref TrackId trackId)
         {
 
             if (ImGui.BeginMainMenuBar())
@@ -77,80 +77,80 @@ namespace AdvancedEdit.UI
                     if (ImGui.BeginMenu("Set Track")){
                         if(ImGui.BeginMenu("Mushroom Cup")){
                             if (ImGui.MenuItem("Peach Circuit")){
-
+                                trackId = TrackId.PeachCircuit;
                             }
                             if (ImGui.MenuItem("Shy Guy Beach")){
-
+                                trackId = TrackId.ShyGuyBeach;
                             }
                             if (ImGui.MenuItem("Riverside Park")){
-
+                                trackId = TrackId.RiversidePark;
                             }
                             if (ImGui.MenuItem("Bowser Castle 1")){
-
+                                trackId = TrackId.BowserCastle1;
                             }
                             ImGui.EndMenu();
                         }
 
                         if (ImGui.BeginMenu("Flower Cup")){
                             if (ImGui.MenuItem("Mario Circuit")){
-
+                                trackId = TrackId.MarioCircuit;
                             }
                             if (ImGui.MenuItem("Boo Lake")){
-
+                                trackId = TrackId.BooLake;
                             }
                             if (ImGui.MenuItem("Cheese Land")){
-
+                                trackId = TrackId.CheeseLand;
                             }
-                            if (ImGui.MenuItem("Bowser Castle")){
-
+                            if (ImGui.MenuItem("Bowser Castle 2")){
+                                trackId = TrackId.BowserCastle2;
                             }
                             ImGui.EndMenu();
                         }
 
                         if (ImGui.BeginMenu("Lightning Cup")){
                             if (ImGui.MenuItem("Luigi Circuit")){
-
+                                trackId = TrackId.LuigiCircuit;
                             }
                             if (ImGui.MenuItem("Sky Garden")){
-
+                                trackId = TrackId.SkyGarden;
                             }
                             if (ImGui.MenuItem("Cheep Cheep Island")){
-
+                                trackId = TrackId.CheepCheepIsland;
                             }
                             if (ImGui.MenuItem("Sunset Wilds")){
-
+                                trackId = TrackId.SunsetWilds;
                             }
                             ImGui.EndMenu();
                         }
 
                         if (ImGui.BeginMenu("Star Cup")){
                             if (ImGui.MenuItem("Snow Land")){
-
+                                trackId = TrackId.SnowLand;
                             }
                             if (ImGui.MenuItem("Ribbon Road")){
-
+                                trackId = TrackId.RibbonRoad;
                             }
                             if (ImGui.MenuItem("Yoshi Desert")){
-
+                                trackId = TrackId.YoshiDesert;
                             }
                             if (ImGui.MenuItem("Bowser Castle 3")){
-
+                                trackId = TrackId.BowserCastle3;
                             }
                             ImGui.EndMenu();
                         }
 
                         if (ImGui.BeginMenu("Special Cup")){
                             if (ImGui.MenuItem("Lakeside Park")){
-
+                                trackId = TrackId.LakesidePark;
                             }
                             if (ImGui.MenuItem("Broken Pier")){
-
+                                trackId = TrackId.BrokenPier;
                             }
                             if (ImGui.MenuItem("Bowser Castle 4")){
-
+                                trackId = TrackId.BowserCastle4;
                             }
                             if (ImGui.MenuItem("Rainbow Road")){
-
+                                trackId = TrackId.RainbowRoad;
                             }
                             ImGui.EndMenu();
                         }
