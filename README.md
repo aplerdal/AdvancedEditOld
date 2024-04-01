@@ -19,6 +19,7 @@ for use with a rom with a sha1 hash of `9d327c030c3e2d9007990518594f70c3340ac56f
 ## Windows
 Requirements:
  - Visual Studio 2022
+
 Clone the repository and open the `.sln` file in visual studio. Open the "configure startup properties" menu.
 ![image](https://github.com/aplerdal/AdvancedEdit/assets/59904070/82d43656-c483-48a2-bfbb-462c566e53aa)\
 Change the startup project to AdvancedEdit\
