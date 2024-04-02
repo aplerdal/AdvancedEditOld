@@ -29,6 +29,12 @@
     <ProjectReference Include="..\MonoGame.ImGuiNet\Monogame.ImGuiNet.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Update="C:\Users\apler\.nuget\packages\nativefiledialog.extended\1.1.2\contentFiles\any\net7.0\libnfd.dylib">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="C:\Users\apler\.nuget\packages\nativefiledialog.extended\1.1.2\contentFiles\any\net7.0\libnfd.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Update="C:\Users\apler\.nuget\packages\nativefiledialog.extended\1.1.2\contentFiles\any\net7.0\nfd.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
