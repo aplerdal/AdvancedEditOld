@@ -73,13 +73,13 @@ namespace AdvancedEdit.UI
 
                 if (ImGui.BeginMenu("Edit"))
                 {
-                    if (ImGUi.BeginMenu("Undo", "Ctrl+Z")){
+                    if (ImGui.MenuItem("Undo", "Ctrl+Z")){
                         
                     }
-                    if (ImGUI.BeginMenu("Redo", "Ctrl+Y")){
+                    if (ImGui.MenuItem("Redo", "Ctrl+Y")){
 
                     }
-                    if (ImGui.BeginMenu("Clear Track")){
+                    if (ImGui.MenuItem("Clear Track")){
                         
                     }
                 }
