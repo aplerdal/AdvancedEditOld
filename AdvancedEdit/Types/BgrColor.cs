@@ -39,9 +39,9 @@ namespace AdvancedEdit.Types
         }
         public BgrColor(byte b, byte g, byte r)
         {
-            this.b = (b);
-            this.g = (g);
-            this.r = (r);
+            this.b = (byte)((r/8) & 0b00011111);
+            this.g = (byte)((r/8) & 0b00011111);
+            this.r = (byte)((r/8) & 0b00011111);
         }
         public Color ToColor()
         {

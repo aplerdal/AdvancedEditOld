@@ -33,6 +33,7 @@ namespace AdvancedEdit.UI{
         //public Texture2D[] tiles = new Texture2D[256];
         //public IntPtr[] tileTextures = new IntPtr[256];
         public int tileSize = 16;
+        System.Numerics.Vector2 padding = new System.Numerics.Vector2(0,0);
         public Vector2I mapSize = new(16,16);
         //public byte selectedTile;
 
@@ -72,15 +73,19 @@ namespace AdvancedEdit.UI{
             }
             ImGui.PopStyleVar();
             ImGui.PopStyleVar();
+            
             ImGui.SeparatorText("");
             ImGui.Checkbox("Palette always square?", ref ratioLocked);
+            
             ImGui.SeparatorText("Brush Settings");
             ImGui.InputInt("Brush Size", ref brushSize);
             brushSize = Math.Clamp(brushSize, 1, 256);
+
             ImGui.SeparatorText("Preview");
             ImGui.Text("Active Tile");
             ImGui.Image(tileTextures[selectedTile], new System.Numerics.Vector2(64, 64));
 
+            
             ImGui.End();
         }
     }

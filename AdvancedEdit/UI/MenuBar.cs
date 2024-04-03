@@ -184,13 +184,9 @@ namespace AdvancedEdit.UI
                 {
                     if (ImGui.MenuItem("Import..."))
                     {
-                        Texture2D loadedTiles;
                         var path = NFD.OpenDialog("", new Dictionary<string, string>() { { "png", "png" }, { "bmp", "bmp" } });
-                        using (FileStream stream = new FileStream(path, FileMode.Open))
-                        {
-                            Texture2D texture = Texture2D.FromStream(AdvancedEditor.gd, stream);
-                            loadedTiles = texture;
-                        }
+                        Texture2D texture = Texture2D.FromFile(AdvancedEditor.gd, path);
+                        
                     }
                     ImGui.EndMenu();
                 }
