@@ -23,7 +23,12 @@ using NativeFileDialog.Extended;
 using System.Collections.Generic;
 using System.Runtime.Intrinsics.Arm;
 using System.IO;
+using System.Drawing;
 using AdvancedEdit.TrackData;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
+using static System.Net.Mime.MediaTypeNames;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace AdvancedEdit.UI
 {
@@ -175,11 +180,26 @@ namespace AdvancedEdit.UI
                     ImGui.EndMenu();
                 }
 
+                if (ImGui.BeginMenu("Tiles"))
+                {
+                    if (ImGui.MenuItem("Import..."))
+                    {
+                        Texture2D loadedTiles;
+                        var path = NFD.OpenDialog("", new Dictionary<string, string>() { { "png", "png" }, { "bmp", "bmp" } });
+                        using (FileStream stream = new FileStream(path, FileMode.Open))
+                        {
+                            Texture2D texture = Texture2D.FromStream(AdvancedEditor.gd, stream);
+                            loadedTiles = texture;
+                        }
+                    }
+                    ImGui.EndMenu();
+                }
+
                 if (ImGui.BeginMenu("View"))
                 {
 
+                    ImGui.EndMenu();
                 }
-                
 
                 ImGui.EndMainMenuBar();
             }

@@ -47,7 +47,6 @@ namespace AdvancedEdit.TrackData
         int TrackSize;
         public int[] TileBlocks;
         int tileLength;
-        int completeLength;
         int layoutLength;
         public int[] LayoutBlocks;
         public byte[,] Indicies;
