@@ -28,7 +28,8 @@ class UiManager{
     TrackPanel trackPanel;
 
     //Track Variables
-    public Texture2D[] tiles = new Texture2D[256];
+    public Texture2D[] tileObjects = new Texture2D[256];
+    public Tile[] tiles = new Tile[256];
     public IntPtr[] tileTextures = new IntPtr[256];
     public byte[,] indicies = new byte[0,0];
 
@@ -46,14 +47,35 @@ class UiManager{
         SetTrack(TrackId.PeachCircuit);
     }
     public void Draw(){
-        MenuBar.Draw(ref newTrack);
+        MenuBar.Draw(ref newTrack, ref tiles);
         if(newTrack != trackId)
         {
             SetTrack(newTrack);
         }
         if (AdvancedEditor.intialized){
+            if(tiles != AdvancedEditor.tracks[(int)trackId].Tiles){
+                SetTiles(tiles);
+            }
             tilePalette.Draw(tileTextures, ref selectedTile);
             trackPanel.Draw(tileTextures, indicies, ref selectedTile);
+        }
+    }
+    public void SetTiles(Tile[] tiles)
+    {
+        this.tiles = tiles;
+        
+        AdvancedEditor.tracks[(int)trackId].Tiles = tiles;
+        for (int i = 0; i < AdvancedEditor.tracks[(int)trackId].Tiles.Length; i++)
+        {
+            //Load Tile texture
+            if (tileTextures[i] != IntPtr.Zero)
+            {
+                AdvancedEditor.GuiRenderer.UnbindTexture(tileTextures[i]);
+            }
+            Texture2D tile = tiles[i].ToImage(AdvancedEditor.gd);
+            tileTextures[i] = AdvancedEditor.GuiRenderer.BindTexture(tile);
+
+            tiles[i] = tiles[i];
         }
     }
 
@@ -65,6 +87,7 @@ class UiManager{
     {
         this.newTrack = trackId;
         this.trackId = trackId;
+        this.tiles = AdvancedEditor.tracks[(int)trackId].Tiles;
 
         indicies = AdvancedEditor.tracks[(int)trackId].Indicies;
         for (int i = 0; i < AdvancedEditor.tracks[(int)trackId].Tiles.Length; i++)
@@ -77,7 +100,7 @@ class UiManager{
             Texture2D tile = AdvancedEditor.tracks[(int)trackId].Tiles[i].ToImage(AdvancedEditor.gd);
             tileTextures[i] = AdvancedEditor.GuiRenderer.BindTexture(tile);
 
-            tiles[i] = tile;
+            tileObjects[i] = tile;
         }
     }
 }

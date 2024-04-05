@@ -29,12 +29,13 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
 using static System.Net.Mime.MediaTypeNames;
 using Microsoft.Xna.Framework.Graphics;
+using AdvancedEdit.Types;
 
 namespace AdvancedEdit.UI
 {
     class MenuBar
     {
-        public static void Draw(ref TrackId trackId)
+        public static void Draw(ref TrackId trackId, ref Tile[] tiles)
         {
 
             if (ImGui.BeginMainMenuBar())
@@ -186,7 +187,7 @@ namespace AdvancedEdit.UI
                     {
                         var path = NFD.OpenDialog("", new Dictionary<string, string>() { { "png", "png" }, { "bmp", "bmp" } });
                         Texture2D texture = Texture2D.FromFile(AdvancedEditor.gd, path);
-                        
+                        tiles = TileImport.FromTexture(texture);
                     }
                     ImGui.EndMenu();
                 }
