@@ -65,7 +65,7 @@ class UiManager{
         this.tiles = tiles;
         
         AdvancedEditor.tracks[(int)trackId].Tiles = tiles;
-        for (int i = 0; i < AdvancedEditor.tracks[(int)trackId].Tiles.Length; i++)
+        for (int i = 0; i < tiles.Length; i++)
         {
             //Load Tile texture
             if (tileTextures[i] != IntPtr.Zero)
@@ -74,8 +74,6 @@ class UiManager{
             }
             Texture2D tile = tiles[i].ToImage(AdvancedEditor.gd);
             tileTextures[i] = AdvancedEditor.GuiRenderer.BindTexture(tile);
-
-            tiles[i] = tiles[i];
         }
     }
 

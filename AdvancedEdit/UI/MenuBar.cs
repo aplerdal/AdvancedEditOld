@@ -186,8 +186,10 @@ namespace AdvancedEdit.UI
                     if (ImGui.MenuItem("Import..."))
                     {
                         var path = NFD.OpenDialog("", new Dictionary<string, string>() { { "png", "png" }, { "bmp", "bmp" } });
-                        Texture2D texture = Texture2D.FromFile(AdvancedEditor.gd, path);
-                        tiles = TileImport.FromTexture(texture);
+                        if (path != ""){
+                            Texture2D texture = Texture2D.FromFile(AdvancedEditor.gd, path);
+                            tiles = TileImport.FromTexture(texture);
+                        }
                     }
                     ImGui.EndMenu();
                 }
