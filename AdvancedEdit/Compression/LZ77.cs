@@ -533,11 +533,11 @@ namespace AdvancedEdit.Compression
             }
             return compData;
         }
-        public static unsafe byte[] CompressBytes(byte[] file)
+        public static unsafe byte[] CompressBytes(byte[] data)
         {
-            fixed (byte* rom = &file[0])
+            fixed (byte* rom = &data[0])
             {
-                return Compress(rom, file.Length);
+                return Compress(rom, data.Length);
             }
         }
         public static unsafe int DecompressedLength(byte[] file, int startPos)

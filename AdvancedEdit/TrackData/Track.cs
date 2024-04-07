@@ -200,7 +200,7 @@ namespace AdvancedEdit.TrackData
             #region Track Layout Compression
             List<byte> rawLayout = new List<byte>(); // binary data of the track layout
 
-            rawLayout.AddRange(TrackData[LayoutPointerTable..(LayoutPointerTable + 16 * 2)]);
+            rawLayout.AddRange(TrackData[LayoutPointerTable..(LayoutPointerTable + 32)]);
             for (int i = 0; i < TrackSize*TrackSize/4096; i++)
             {
                 byte[] compressed = LZ77.CompressBytes(indicies[(i * 4096)..((i + 1) * 4096)]);
@@ -210,35 +210,45 @@ namespace AdvancedEdit.TrackData
             }
             int offset = rawLayout.Count - layoutLength;
 
-            // offset data by the amount it changed
-            Buffer.BlockCopy(ToLittleEndianInt(TilesetPointerTable + offset),0,TrackData,0x80,4);
-            Buffer.BlockCopy(ToLittleEndianInt(PalettePointer + offset),0,TrackData,0x84,4);
-            Buffer.BlockCopy(ToLittleEndianInt(TileBehaviours + offset),0,TrackData,0x88,4);
-            Buffer.BlockCopy(ToLittleEndianInt(ObjectsPointer + offset),0,TrackData,0x8c,4);
-            Buffer.BlockCopy(ToLittleEndianInt(OverlayPointer + offset),0,TrackData,0x90,4);
-            Buffer.BlockCopy(ToLittleEndianInt(ItemBoxesPointer + offset),0,TrackData,0x94,4);
-            Buffer.BlockCopy(ToLittleEndianInt(EndlinePointer + offset),0,TrackData,0x98,4);
-            Buffer.BlockCopy(ToLittleEndianInt(MinimapPointer + offset),0,TrackData,0xc4,4);
+            OffsetDataAfter(LayoutPointerTable, rawLayout.Count - layoutLength);
+            WriteOffsets();
+            
+            #endregion
+            #region Track Tile Compression
+            List<byte> rawTiles = new List<byte>();
+            rawTiles.AddRange(TrackData[TilesetPointerTable..(TilesetPointerTable+8)]);
+            // Split tiles into 4 groups.
+            for (int i = 0; i < 4; i++){
+                byte[] tileGroupIndicies = new byte[4096];
+                for (int j = 0; j < 64; j++){
+                    for (int y = 0; y < 8; y++){
+                        for (int x = 0; x < 8; x++){ // 4 nested loops! Yay!
+                            tileGroupIndicies[j*64+y*8+x] = Tiles[i*64 + j].indicies[x,y];
+                        }
+                    }
+                }
+                rawTiles[i*2] = ToLittleEndianShort((short)rawTiles.Count)[0];
+                rawTiles[i*2+1] = ToLittleEndianShort((short)rawTiles.Count)[1];
+                rawTiles.AddRange(LZ77.CompressBytes(tileGroupIndicies));
+            }
 
-            Buffer.BlockCopy(ToLittleEndianInt(AiZonesPointer + offset),0,TrackData,0xcc,4);
-            Buffer.BlockCopy(ToLittleEndianInt(TreeGfx + offset),0,TrackData,0xe4,4);
-            Buffer.BlockCopy(ToLittleEndianInt(ObjectPalette + offset),0,TrackData,0xe8,4);
-            
-            //OffsetDataAfter(TilesetPointerTable + rawLayout.Count, rawLayout.Count - layoutLength);
-            //WriteOffsets();
-            
+            OffsetDataAfter(TilesetPointerTable, rawTiles.Count - tileLength);
+            WriteOffsets();
+
             #endregion
 
 
 
             rawTrack.AddRange(TrackData[0..LayoutPointerTable]);
             rawTrack.AddRange(rawLayout);
-            rawTrack.AddRange(TrackData[(LayoutPointerTable + layoutLength)..TrackData.Length]);
+            rawTrack.AddRange(TrackData[(LayoutPointerTable + layoutLength)..TilesetPointerTable]);
+            rawTrack.AddRange(rawTiles);
+            rawTrack.AddRange(TrackData[(TilesetPointerTable + tileLength)..TrackData.Length]);
         
 
             layoutLength = rawLayout.Count;
             TrackData = rawTrack.ToArray();
-
+            
         }
         public static byte[] CompileRom(List<Track> tracks)
         {
@@ -260,24 +270,18 @@ namespace AdvancedEdit.TrackData
         }
         public void WriteOffsets()
         {
-            Buffer.BlockCopy(ToLittleEndianInt(RepeatTiles),0,TrackData,0x30,4);
-            //RepeatTiles = LittleEndianInt(TrackData[0x30..0x34]);
             Buffer.BlockCopy(ToLittleEndianInt(TilesetPointerTable),0,TrackData,0x80,4);
-            //TilesetPointerTable = LittleEndianInt(TrackData[0x80..0x84]);
             Buffer.BlockCopy(ToLittleEndianInt(PalettePointer),0,TrackData,0x84,4);
-            // PalettePointer = LittleEndianInt(TrackData[0x84..0x88]);
             Buffer.BlockCopy(ToLittleEndianInt(TileBehaviours),0,TrackData,0x88,4);
-            // TileBehaviours = LittleEndianInt(TrackData[0x88..0x8c]);
             Buffer.BlockCopy(ToLittleEndianInt(ObjectsPointer),0,TrackData,0x8c,4);
-            // ObjectsPointer = LittleEndianInt(TrackData[0x8c..0x90]);
             Buffer.BlockCopy(ToLittleEndianInt(OverlayPointer),0,TrackData,0x90,4);
-            // OverlayPointer = LittleEndianInt(TrackData[0x90..0x94]);
             Buffer.BlockCopy(ToLittleEndianInt(ItemBoxesPointer),0,TrackData,0x94,4);
-            // ItemBoxesPointer = LittleEndianInt(TrackData[0x94..0x98]);
             Buffer.BlockCopy(ToLittleEndianInt(EndlinePointer),0,TrackData,0x98,4);
-            // EndlinePointer = LittleEndianInt(TrackData[0x98..0x9c]);
             Buffer.BlockCopy(ToLittleEndianInt(MinimapPointer),0,TrackData,0xc4,4);
-            // MinimapPointer = LittleEndianInt(TrackData[0xc4..0xc8]);
+
+            Buffer.BlockCopy(ToLittleEndianInt(AiZonesPointer),0,TrackData,0xcc,4);
+            Buffer.BlockCopy(ToLittleEndianInt(TreeGfx),0,TrackData,0xe4,4);
+            Buffer.BlockCopy(ToLittleEndianInt(ObjectPalette),0,TrackData,0xe8,4);
         }
         public void OffsetDataAfter(int finalPos, int offset)
         {
@@ -288,15 +292,23 @@ namespace AdvancedEdit.TrackData
             if (finalPos < ObjectsPointer) ObjectsPointer += offset;
             if (finalPos < OverlayPointer) OverlayPointer += offset;
             if (finalPos < ItemBoxesPointer) ItemBoxesPointer += offset;
+            if (finalPos < EndlinePointer) EndlinePointer += offset;
             if (finalPos < MinimapPointer) MinimapPointer += offset;
-            for (int i = 0; i < TileBlocks.Length; i++)
+            if (finalPos < AiZonesPointer) AiZonesPointer += offset;
+            /*if (finalPos < TreeGfx)*/ TreeGfx += offset;
+            /*if (finalPos < ObjectPalette)*/ ObjectPalette += offset;
+
+            // The 2 offsets above don't load. temp fix: assume they will be changed.
+            // Todo: Fix loading
+
+            /*for (int i = 0; i < TileBlocks.Length; i++)
             {
                 if (finalPos < TileBlocks[i]) TileBlocks[i] += offset;
             }
             for (int i = 0; i < LayoutBlocks.Length; i++)
             {
                 if (finalPos < LayoutBlocks[i]) LayoutBlocks[i] += offset;
-            }
+            }*/
 
         }
         public static int LittleEndianInt(byte[] a)
