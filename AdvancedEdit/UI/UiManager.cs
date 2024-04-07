@@ -84,6 +84,8 @@ class UiManager{
     public void SetTrack(TrackId trackId)
     {
         this.newTrack = trackId;
+        if (AdvancedEditor.tracks[(int)this.trackId].Indicies is not null)
+            AdvancedEditor.tracks[(int)this.trackId].PackData();
         this.trackId = trackId;
         this.tiles = AdvancedEditor.tracks[(int)trackId].Tiles;
 

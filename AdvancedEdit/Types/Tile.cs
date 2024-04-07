@@ -35,7 +35,7 @@ namespace AdvancedEdit.Types {
         }
         public static Tile[] GenerateTiles(byte[] indicies, Palette palette)
         {
-            int tileno = (int)Math.Ceiling((decimal)indicies.Length / (decimal)64);
+            int tileno = (int)Math.Ceiling(indicies.Length / 64f);
             Tile[] tiles = new Tile[tileno];
             for (int t = 0; t < tileno; t++)
             {

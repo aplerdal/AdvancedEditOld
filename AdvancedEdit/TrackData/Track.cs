@@ -149,17 +149,17 @@ namespace AdvancedEdit.TrackData
         }
         public void LoadLocalTiles()
         {
-            //Tiles
-            int t1 = TileBlocks[0];
-            int t2 = TileBlocks[1];
-            int t3 = TileBlocks[2];
-            int t4 = TileBlocks[3];
             byte[] tilegfx = new byte[4096 * 4];
-            tileLength = 8 + LZ77.DecompressedLength(TrackData, t1) + LZ77.DecompressedLength(TrackData, t2) + LZ77.DecompressedLength(TrackData, t3) + LZ77.DecompressedLength(TrackData, t4);
-            Array.Copy(LZ77.DecompressRange(TrackData, t1), 0, tilegfx, 4096 * 0, 4096);
-            Array.Copy(LZ77.DecompressRange(TrackData, t2), 0, tilegfx, 4096 * 1, 4096);
-            Array.Copy(LZ77.DecompressRange(TrackData, t3), 0, tilegfx, 4096 * 2, 4096);
-            Array.Copy(LZ77.DecompressRange(TrackData, t4), 0, tilegfx, 4096 * 3, 4096);
+
+            tileLength = 8 +
+            LZ77.DecompressedLength(TrackData, TileBlocks[0]) +
+            LZ77.DecompressedLength(TrackData, TileBlocks[1]) + 
+            LZ77.DecompressedLength(TrackData, TileBlocks[2]) + 
+            LZ77.DecompressedLength(TrackData, TileBlocks[3]);
+            Array.Copy(LZ77.DecompressRange(TrackData, TileBlocks[0]), 0, tilegfx, 4096 * 0, 4096);
+            Array.Copy(LZ77.DecompressRange(TrackData, TileBlocks[1]), 0, tilegfx, 4096 * 1, 4096);
+            Array.Copy(LZ77.DecompressRange(TrackData, TileBlocks[2]), 0, tilegfx, 4096 * 2, 4096);
+            Array.Copy(LZ77.DecompressRange(TrackData, TileBlocks[3]), 0, tilegfx, 4096 * 3, 4096);
 
             //Palette
             byte[] rawpal = new byte[128];
@@ -185,12 +185,9 @@ namespace AdvancedEdit.TrackData
         }
         public void PackData()
         {
-            if (Address == 0x27f510 || Address == 0x280580 || Address == 0x281624 || Address == 0x282c24)
-            {
-                return;
-            }
-            List<byte> data = new List<byte>();
+            List<byte> rawTrack = new List<byte>(); //binary data of track
 
+            // convert 2d indici array to single dimension
             byte[] indicies = new byte[Indicies.GetLength(0) * Indicies.GetLength(1)];
             int write = 0;
             for (int i = 0; i < Indicies.GetLength(0); i++)
@@ -200,7 +197,9 @@ namespace AdvancedEdit.TrackData
                     indicies[write++] = Indicies[i, j];
                 }
             }
-            List<byte> rawLayout = new List<byte>();
+            #region Track Layout Compression
+            List<byte> rawLayout = new List<byte>(); // binary data of the track layout
+
             rawLayout.AddRange(TrackData[LayoutPointerTable..(LayoutPointerTable + 16 * 2)]);
             for (int i = 0; i < TrackSize*TrackSize/4096; i++)
             {
@@ -211,11 +210,12 @@ namespace AdvancedEdit.TrackData
             }
             int offset = rawLayout.Count - layoutLength;
 
+            // offset data by the amount it changed
             Buffer.BlockCopy(ToLittleEndianInt(TilesetPointerTable + offset),0,TrackData,0x80,4);
-            Buffer.BlockCopy(ToLittleEndianInt(PalettePointer+ offset),0,TrackData,0x84,4);
+            Buffer.BlockCopy(ToLittleEndianInt(PalettePointer + offset),0,TrackData,0x84,4);
             Buffer.BlockCopy(ToLittleEndianInt(TileBehaviours + offset),0,TrackData,0x88,4);
-            Buffer.BlockCopy(ToLittleEndianInt(ObjectsPointer+ offset),0,TrackData,0x8c,4);
-            Buffer.BlockCopy(ToLittleEndianInt(OverlayPointer+ offset),0,TrackData,0x90,4);
+            Buffer.BlockCopy(ToLittleEndianInt(ObjectsPointer + offset),0,TrackData,0x8c,4);
+            Buffer.BlockCopy(ToLittleEndianInt(OverlayPointer + offset),0,TrackData,0x90,4);
             Buffer.BlockCopy(ToLittleEndianInt(ItemBoxesPointer + offset),0,TrackData,0x94,4);
             Buffer.BlockCopy(ToLittleEndianInt(EndlinePointer + offset),0,TrackData,0x98,4);
             Buffer.BlockCopy(ToLittleEndianInt(MinimapPointer + offset),0,TrackData,0xc4,4);
@@ -224,15 +224,21 @@ namespace AdvancedEdit.TrackData
             Buffer.BlockCopy(ToLittleEndianInt(TreeGfx + offset),0,TrackData,0xe4,4);
             Buffer.BlockCopy(ToLittleEndianInt(ObjectPalette + offset),0,TrackData,0xe8,4);
             
-            //OffsetDataAfter(TilesetPointerTable, rawLayout.Count - layoutLength);
+            //OffsetDataAfter(TilesetPointerTable + rawLayout.Count, rawLayout.Count - layoutLength);
             //WriteOffsets();
-
-            data.AddRange(TrackData[0..LayoutPointerTable]);
-            data.AddRange(rawLayout);
-            data.AddRange(TrackData[(LayoutPointerTable + layoutLength)..TrackData.Length]);
+            
+            #endregion
 
 
-            TrackData = data.ToArray();
+
+            rawTrack.AddRange(TrackData[0..LayoutPointerTable]);
+            rawTrack.AddRange(rawLayout);
+            rawTrack.AddRange(TrackData[(LayoutPointerTable + layoutLength)..TrackData.Length]);
+        
+
+            layoutLength = rawLayout.Count;
+            TrackData = rawTrack.ToArray();
+
         }
         public static byte[] CompileRom(List<Track> tracks)
         {
@@ -241,10 +247,10 @@ namespace AdvancedEdit.TrackData
             List<byte> rom = new List<byte>();
             rom.AddRange(AdvancedEditor.file[0..position]);
             for (int i = 0; i < tracks.Count; i++){
-                var track = tracks[i];
-                var temp = ToLittleEndianInt(position-0x258000);
-                rom[trackPointerTable + 4 * i + 0] = temp[0]; rom[trackPointerTable + 4 * i + 1] = temp[1];
-                rom[trackPointerTable + 4 * i + 2] = temp[2]; rom[trackPointerTable + 4 * i + 3] = temp[3];
+                Track track = tracks[i];
+                byte[] relPos = ToLittleEndianInt(position-0x258000);
+                rom[trackPointerTable + 4 * i + 0] = relPos[0]; rom[trackPointerTable + 4 * i + 1] = relPos[1];
+                rom[trackPointerTable + 4 * i + 2] = relPos[2]; rom[trackPointerTable + 4 * i + 3] = relPos[3];
                 track.Address = position;
                 rom.AddRange(track.TrackData);
                 position += track.TrackData.Length;
@@ -322,7 +328,6 @@ namespace AdvancedEdit.TrackData
             return bytes;
         }
 
-        #region Tracks
         public static void GenerateTracks()
         {
             int tracks = 0x258000;
@@ -332,7 +337,6 @@ namespace AdvancedEdit.TrackData
                 AdvancedEditor.tracks.Add(track);
             }
         }
-        #endregion
     }
     public enum TrackId
     {

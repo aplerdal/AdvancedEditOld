@@ -58,6 +58,7 @@ namespace AdvancedEdit.UI
                     ImGui.BeginDisabled(!AdvancedEditor.loaded);
                     if (ImGui.MenuItem("Save", "Ctrl+S"))
                     {
+                        AdvancedEditor.tracks[(int)trackId].PackData();
                         File.WriteAllBytes("MkscModified.gba", Track.CompileRom(AdvancedEditor.tracks));
                     }
 
@@ -66,6 +67,7 @@ namespace AdvancedEdit.UI
                         if (AdvancedEditor.loaded)
                         {
                             string str = NFD.SaveDialog("", "", new Dictionary<string, string>() { { "Game Boy Advance ROM", "gba" } });
+                            AdvancedEditor.tracks[(int)trackId].PackData();
                             if (str != null)
                             {
                                 File.WriteAllBytes(str, Track.CompileRom(AdvancedEditor.tracks));
