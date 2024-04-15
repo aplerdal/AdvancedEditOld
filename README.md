@@ -3,16 +3,21 @@ A Mario Kart: Super Circuit track editor using C#, MonoGame, and ImGui
 
 for use with a rom with a sha1 hash of `9d327c030c3e2d9007990518594f70c3340ac56f`
 
-### Planned Features
-- [ ] Import custom tilesets
-- [ ] Custom Panorama background
-- [ ] Change tracks
-- [ ] Handle animated tiles
-- [ ] Replace Track Names
-- [ ] Replace Track Pictures
-- [ ] Upcoming turn sign editor
-- [ ] Fill / Reset Track
-- [ ] Listen for more ideas!
+### Roadmap
+Last updated 2024-4-15
+*Does not reflect the order features will be added*
+| Completion | Feature | Notes |
+|------------|---------|-------|
+|  95%       | Layout editor | Missing zoom |
+|  90%       | Track Switching | Missing some tracks, otherwise usable |
+|  70%       | Import custom tilesets | Just need to fix compression issues |
+|   0%       | More editor tools |  |
+|   0%       | Undo | Will be slowly added with other features |
+|   0%       | Custom background |  |
+|   0%       | Handle animated palettes |  |
+|   0%       | Replace Track Names |  |
+|   0%       | Replace Track Pictures |  |
+|   0%       | Upcoming turn sign editor |  |
 
 # Building
 **If you want to build a release build use the command in Release.txt and replace PLATFORM with the listed platform options**
