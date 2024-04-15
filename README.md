@@ -4,7 +4,7 @@ A Mario Kart: Super Circuit track editor using C#, MonoGame, and ImGui
 for use with a rom with a sha1 hash of `9d327c030c3e2d9007990518594f70c3340ac56f`
 
 ### Roadmap
-Last updated 2024-4-15
+Last updated 2024-4-15\
 *Does not reflect the order features will be added*
 | Completion | Feature | Notes |
 |------------|---------|-------|
