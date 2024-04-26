@@ -10,7 +10,7 @@ Last updated 2024-4-22\
 |------------|---------|-------|
 |  95%       | Layout editor | Missing zoom |
 |  90%       | Track Switching | Missing some tracks, otherwise usable |
-|  70%       | Import custom tilesets | Just need to fix pointer issues |
+|  100%      | Import custom tilesets | fully functional |
 |   0%       | More editor tools |  |
 |   0%       | Undo | Will be slowly added with other features |
 |   0%       | Custom background |  |
