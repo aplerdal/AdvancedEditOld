@@ -35,9 +35,10 @@ namespace AdvancedEdit.UI
         bool dragged = false;
         Vector2 lastPos;
         Vector2 contentPosition = new Vector2(0,0);
-
+        ToolManager toolManager = new ToolManager();
         public TrackPanel()
         {
+            
         }
         /// <summary>
         /// Gets the tile position in indicies at the given absolute position. Must be called from inside the UI rendering sequence of the TilePanel
@@ -54,7 +55,6 @@ namespace AdvancedEdit.UI
         }
         public void Draw(IntPtr[] tileTextures, byte[,] indicies, ref byte selectedTile)
         {
-            //TODO Fix memory leak
             Vector2 newContentPos = contentPosition;
             ImGui.Begin("TilePanel",ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoScrollbar);
             mapSize = new Vector2I(indicies.GetLength(0), indicies.GetLength(1));
@@ -66,11 +66,14 @@ namespace AdvancedEdit.UI
                 {
                     ImGui.SetCursorPos(new(x*tileSize+contentPosition.X,y*tileSize+contentPosition.Y));
                     ImGui.Image(tileTextures[indicies[y,x]], new System.Numerics.Vector2(tileSize, tileSize));
+                    if (previewIndicies[y,x]!=-1) toolManager.DrawToolPreview(x,y);
                     if (ImGui.IsItemHovered())
                     {
                         if (ImGui.IsMouseDown(ImGuiMouseButton.Left))
                         {
                             indicies[y, x] = selectedTile;
+                        } else {
+
                         }
                     }
                     if (ImGui.IsMouseDown(ImGuiMouseButton.Middle))
