@@ -1,5 +1,5 @@
 # AdvancedEdit
-**Development has paused on this project. Use [https://github.com/aplerdal/AdvancedImport](https://github.com/aplerdal/AdvancedImport) instead**
+**Development has paused on this project. Use [https://github.com/aplerdal/AdvancedEdit6](https://github.com/aplerdal/AdvancedEdit6) instead**
 
 A Mario Kart: Super Circuit track editor using C#, MonoGame, and ImGui
 
